@@ -11,6 +11,8 @@
 <meta property="og:description" content="Un apiculteur local capture et relocalise votre essaim, gratuitement, sur la zone de la CACL en Guyane.">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="fr_FR">
+<link rel="canonical" href="https://VOTRE-DOMAINE.com/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐝</text></svg>">
 
 <script type="application/ld+json">
 {
@@ -50,9 +52,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@400;500;600;700&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" defer></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
 
 <link rel="stylesheet" href="css/styles.css">
 </head>
@@ -240,12 +242,12 @@
 
     <div class="info-tabs">
       <div class="info-tab-nav" role="tablist">
-        <button type="button" class="info-tab-btn active" data-tab="faire" role="tab" aria-selected="true">À faire</button>
-        <button type="button" class="info-tab-btn" data-tab="eviter" role="tab" aria-selected="false">À éviter</button>
-        <button type="button" class="info-tab-btn" data-tab="faq" role="tab" aria-selected="false">Questions fréquentes</button>
+        <button type="button" class="info-tab-btn active" data-tab="faire" role="tab" aria-selected="true" aria-controls="panel-faire">À faire</button>
+        <button type="button" class="info-tab-btn" data-tab="eviter" role="tab" aria-selected="false" aria-controls="panel-eviter">À éviter</button>
+        <button type="button" class="info-tab-btn" data-tab="faq" role="tab" aria-selected="false" aria-controls="panel-faq">Questions fréquentes</button>
       </div>
 
-      <div class="info-tab-panel active" data-panel="faire" role="tabpanel">
+      <div class="info-tab-panel active" data-panel="faire" id="panel-faire" role="tabpanel">
         <ul class="info-list">
           <li><span class="info-key">5 mètres minimum</span> de distance avec l'essaim</li>
           <li>Fenêtres et portes <span class="info-key">fermées</span> à proximité</li>
@@ -255,7 +257,7 @@
         </ul>
       </div>
 
-      <div class="info-tab-panel" data-panel="eviter" role="tabpanel" hidden>
+      <div class="info-tab-panel" data-panel="eviter" id="panel-eviter" role="tabpanel" hidden>
         <ul class="info-list">
           <li><span class="info-key">Jamais</span> d'eau, d'insecticide ou de bombe aérosol</li>
           <li><span class="info-key">Ne pas</span> déplacer ou détruire l'essaim soi-même</li>
@@ -265,7 +267,7 @@
         </ul>
       </div>
 
-      <div class="info-tab-panel" data-panel="faq" role="tabpanel" hidden>
+      <div class="info-tab-panel" data-panel="faq" id="panel-faq" role="tabpanel" hidden>
         <div class="faq-list">
           <details class="faq-item">
             <summary>Qui intervient chez moi ?</summary>
@@ -351,7 +353,7 @@
           <div class="field">
             <label>Dans quelle commune se trouve l'essaim ?</label>
             <select id="commune" name="commune" required class="visually-hidden" tabindex="-1" aria-hidden="true">
-              <option value="" disabled selected></option>
+              <option value="" disabled selected>Choisir une commune</option>
               <option>Cayenne</option>
               <option>Rémire-Montjoly</option>
               <option>Matoury</option>
@@ -485,7 +487,7 @@
   </div>
 </footer>
 
-<script src="js/script.js"></script>
+<script src="js/script.js" defer></script>
 
 </body>
 </html>
