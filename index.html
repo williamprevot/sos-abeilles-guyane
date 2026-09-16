@@ -1063,7 +1063,7 @@
       <p>Survolez la carte pour voir si votre commune est concernée.</p>
     </div>
     <div id="zone-leaflet-map" class="zone-leaflet-map" role="img" aria-label="Carte géographique de la zone d'intervention : Cayenne, Rémire-Montjoly, Matoury, Macouria, Montsinéry-Tonnegrande et Roura"></div>
-    <p class="map-note visually-hidden">Carte OpenStreetMap réelle : le cercle miel indique la zone d'intervention globale, de Macouria à Rémire-Montjoly, à titre indicatif — pas une limite administrative exacte.</p>
+    <p class="map-note visually-hidden">Carte OpenStreetMap réelle : le cercle miel indique la zone d'intervention globale, de Macouria à Roura, à titre indicatif — pas une limite administrative exacte.</p>
   </div>
 </section>
 
@@ -1411,7 +1411,7 @@
       { nom: "Matoury",                 lat: 4.8472, lng: -52.3311 },
       { nom: "Macouria",                lat: 5.0139, lng: -52.4742 },
       { nom: "Montsinéry-Tonnegrande",  lat: 4.8919, lng: -52.4933 },
-      { nom: "Roura",                   lat: 4.7790, lng: -52.3680 }
+      { nom: "Roura",                   lat: 4.7280, lng: -52.3260 }
     ];
 
     const map = L.map(mapEl, {
@@ -1432,11 +1432,11 @@
       mapEl.appendChild(fallback);
     });
 
-    // Un seul rayon d'action global, centré sur les 5 communes et assez large
-    // pour englober Macouria jusqu'à Rémire-Montjoly (calculé à partir de
-    // leurs coordonnées réelles, avec une marge) — plutôt qu'un cercle par ville.
-    L.circle([4.919, -52.380], {
-      radius: 18000,
+    // Un seul rayon d'action global, recalculé pour englober les 6 communes
+    // (centroïde + distance à la plus éloignée + marge), plutôt qu'un cercle
+    // par ville.
+    L.circle([4.8872, -52.3712], {
+      radius: 22000,
       color: "#D9A02C",
       weight: 1.5,
       fillColor: "#D9A02C",
