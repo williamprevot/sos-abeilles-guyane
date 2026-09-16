@@ -82,17 +82,28 @@
     position: sticky; top:32px; z-index: 40;
     border-bottom: 3px solid var(--honey);
   }
-  header .wrap{ display:flex; align-items:center; justify-content:space-between; }
-  .header-right{ display:flex; align-items:center; gap:14px; }
-  .brand{ display:flex; align-items:center; gap:12px; }
+  header .wrap{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  .header-right{ display:flex; align-items:center; gap:14px; flex-shrink:0; }
+  .brand{ display:flex; align-items:center; gap:12px; min-width:0; flex:1 1 auto; overflow:hidden; }
   .brand-mark{ width:30px; height:30px; flex-shrink:0; }
-  .brand-name{ font-family:'Zilla Slab',serif; font-weight:700; font-size:1.15rem; color:var(--parchment); letter-spacing:0.01em; }
+  .brand-name{
+    font-family:'Zilla Slab',serif; font-weight:700; font-size:1.15rem; color:var(--parchment); letter-spacing:0.01em;
+    min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
   .brand-name span{ color: var(--honey); }
+  /* ---------- Navigation principale (grand écran) ---------- */
+  header nav{
+    display:flex;
+    align-items:center;
+    gap:22px;
+    flex-wrap:nowrap;
+    flex-shrink:0;
+  }
   header nav a{
     color: var(--parchment);
     text-decoration:none;
     font-size:0.95rem;
-    margin-left: 26px;
+    white-space:nowrap;
   }
   header nav a:hover{ color: var(--honey); }
   .btn-header{
@@ -105,7 +116,8 @@
     font-family: 'Work Sans', sans-serif;
     font-size: 0.95rem;
     cursor: pointer;
-    margin-left: 36px;
+    white-space:nowrap;
+    flex-shrink:0;
   }
 
   /* ---------- Sélecteur de langue (en-tête) ---------- */
@@ -152,9 +164,14 @@
   .lang-option:hover{ background: rgba(217,160,44,0.14); color: var(--parchment); }
   .lang-option.active{ color: var(--honey); font-weight:600; }
 
-  /* ---------- Bouton "Signaler un essaim" (petit écran, dans l'en-tête) ---------- */
+  /* ---------- Bouton "Signaler un essaim" (petit/moyen écran, dans l'en-tête) ----------
+     Ce seuil (1000px) est volontairement différent de celui utilisé pour le hero (820px) :
+     il correspond à la largeur minimale nécessaire pour que la navigation complète
+     (liens + bouton) reste sur une seule ligne, à côté du sélecteur de langue,
+     sans jamais retomber à la ligne. */
   .mobile-report-fab{ display: none; }
-  @media (max-width: 820px){
+  @media (max-width: 1000px){
+    header nav{ display:none; }
     .mobile-report-fab{
       display: inline-block;
       background: var(--honey);
@@ -175,6 +192,20 @@
       opacity: 1;
       pointer-events: auto;
     }
+  }
+
+  /* ---------- En-tête sur très petits écrans (ex. iPhone) ----------
+     On resserre les espacements et on tronque le nom de la marque en priorité,
+     pour garantir que le bouton "Signaler un essaim" et le sélecteur de langue
+     restent toujours entièrement visibles, sans jamais déborder de l'écran. */
+  @media (max-width: 480px){
+    header .wrap{ padding: 0 16px; }
+    .header-right{ gap: 8px; }
+    .brand{ gap: 8px; }
+    .brand-region{ display:none; }
+    .mobile-report-fab{ padding: 8px 12px; font-size: 0.8rem; }
+    .lang-trigger{ padding: 6px 8px; font-size: 0.72rem; }
+    .lang-menu{ min-width: 130px; }
   }
 
   /* ---------- Hero ---------- */
@@ -905,5 +936,4 @@
     .step{ border-right:none; border-bottom: 1px solid rgba(246,238,218,0.18); }
     .step:last-child{ border-bottom:none; }
     form{ padding: 28px 22px 32px; }
-    header nav{ display:none; }
   }
