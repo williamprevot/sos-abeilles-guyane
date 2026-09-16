@@ -15,13 +15,6 @@
 
   emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
 
-  /* =========================================================
-     Carte de la zone d'intervention — vraie carte géographique
-     (OpenStreetMap via Leaflet, gratuit, sans clé API).
-     Coordonnées exactes des mairies ; le rayon de chaque cercle
-     est calculé à partir de la superficie réelle de la commune
-     (surface équivalente), pas de ses limites administratives.
-     ========================================================= */
   /* ---------- Onglets "En attendant l'intervention" ---------- */
   (function initInfoTabs(){
     const nav = document.querySelector(".info-tab-nav");
@@ -49,10 +42,7 @@
     const mapEl = document.getElementById("zone-leaflet-map");
     if(!mapEl || typeof L === "undefined") return;
 
-    // Clé gratuite à récupérer sur maptiler.com (inscription sans carte
-    // bancaire, ~2 min). OpenStreetMap bloque désormais l'accès direct à
-    // ses serveurs pour ce type de site (osm.wiki/Blocked), MapTiler est
-    // la solution stable pour un usage réel une fois déployé.
+    // Clé gratuite : maptiler.com (compte requis, sans carte bancaire)
     const MAPTILER_KEY = "BWLQgt3asW0Wt5A6AKvg";
 
     const communes = [
@@ -82,9 +72,8 @@
       mapEl.appendChild(fallback);
     });
 
-    // Un seul rayon d'action global, recalculé pour englober les 6 communes
-    // (centroïde + distance à la plus éloignée + marge), plutôt qu'un cercle
-    // par ville.
+    // Rayon global recalculé (centroïde + distance max + marge) pour
+    // englober les 6 communes, plutôt qu'un cercle par ville.
     L.circle([4.8872, -52.3712], {
       radius: 22000,
       color: "#D9A02C",
@@ -139,14 +128,12 @@
   })();
 
   /* =========================================================
-     Nuée interactive (hero) — essaim de points noir & or qui
-     cherchent à rester groupés (cohésion + alignement, comme un
-     vrai essaim) et se dispersent au passage de la souris avant
-     de se regrouper. Mouvement lissé par angle (pas de bruit
-     indépendant par axe, pour éviter les saccades).
-     Rendue en <canvas> plutôt qu'en CSS pour rester fluide avec
-     un grand nombre de points, respecte prefers-reduced-motion
-     et se met en pause quand l'onglet n'est pas visible.
+  /* =========================================================
+     Nuée interactive (hero) — points noir & or qui restent groupés
+     autour de leur reine et se dispersent au passage de la souris.
+     Rendue en <canvas> pour rester fluide à ce nombre de points ;
+     respecte prefers-reduced-motion et se met en pause si l'onglet
+     n'est pas visible.
      ========================================================= */
   (function initSwarm(){
     const canvas = document.getElementById("swarm-canvas");
@@ -212,8 +199,8 @@
       };
     }
 
-    // Trois reines réparties dans des zones différentes de l'écran, chacune
-    // avec son propre cycle vol/repos indépendant.
+    // Zones de départ réparties à l'écran, chacune avec son propre
+    // cycle vol/repos indépendant.
     function initQueens(){
       const zones = [
         { x: 0.2, y: 0.25 },
@@ -246,8 +233,8 @@
 
     function initParticles(){
       initQueens();
-      // Dispersées largement autour de leur reine dès le départ ; la répartition
-      // entre les trois reines est aléatoire, donc pas forcément égale.
+      // Dispersées largement autour de leur reine dès le départ ; la
+      // répartition entre les reines est aléatoire, pas forcément égale.
       particles = Array.from({ length: COUNT }, () => {
         const qi = Math.floor(Math.random() * QUEEN_COUNT);
         const q = queens[qi];
@@ -273,7 +260,7 @@
     }
 
     // Grille spatiale : évite de comparer chaque point à tous les autres
-    // (essentiel à 3000 points pour rester fluide — O(n) plutôt que O(n²))
+    // (O(n) plutôt que O(n²), nécessaire à ce nombre de particules)
     function buildGrid(cellSize){
       const grid = new Map();
       for(let i = 0; i < particles.length; i++){
@@ -304,10 +291,8 @@
     }
 
     function stepQueen(q){
-      // Mode "accroché" : quand la section nidification est visible, chaque
-      // reine se dirige vers sa vignette et s'y stabilise (état "resting"
-      // forcé, pour que ses ouvrières se resserrent autour d'elle). Le reste
-      // du comportement habituel (vol, rebonds...) est mis en pause.
+      // Mode "accroché" (section nidification visible) : la reine se
+      // stabilise sur sa vignette, état "resting" forcé, vol en pause.
       if(q.dockTarget){
         q.x += (q.dockTarget.x - q.x) * 0.07;
         q.y += (q.dockTarget.y - q.y) * 0.07;
@@ -326,11 +311,8 @@
         q.vy *= 0.9;
       }
 
-      // Rappel doux vers sa zone d'origine : sans ça, les impulsions du
-      // scroll et les rebonds successifs finissent, avec le temps, par
-      // pousser les reines dans un coin ou hors de la zone visible.
-      // Calculé sur l'espace de vol réellement disponible à l'écran
-      // (entre l'en-tête et le plafond bas actuel), pas sur toute la page.
+      // Rappel doux vers sa zone d'origine, sur l'espace de vol disponible
+      // (sans ça, scroll et rebonds finissent par tout pousser vers un coin).
       const flyTop = headerHeight;
       const flyBottom = Math.min(height, beeCeilingY);
       if(flyBottom > flyTop){
@@ -340,9 +322,8 @@
         q.vy += (homeY - q.y) * 0.00025;
       }
 
-      // Répulsion douce entre reines : sans ça, rien n'empêche qu'avec le
-      // temps elles finissent, par hasard, toutes regroupées au même endroit
-      // (souvent un coin, où les rebonds sur deux bords se cumulent).
+      // Répulsion douce entre reines, pour éviter qu'elles finissent
+      // regroupées au même endroit avec le temps.
       const minQueenDist = Math.min(width, height) * 0.26;
       queens.forEach((other) => {
         if(other === q) return;
@@ -394,12 +375,10 @@
       let aliVX = 0, aliVY = 0, aliN = 0;
       let sepX = 0, sepY = 0;
 
-      // Boucle de voisinage inlinée (pas de fonction de rappel) : à 3000
-      // points, éviter l'indirection ici compte vraiment pour la fluidité.
-      // Plafonnée à MAX_NEIGHBOR_CHECKS : sans ça, quand un essaim se resserre
-      // (phase "posée"), des centaines de points se retrouvent dans les mêmes
-      // cellules et le calcul explose. Un échantillon suffit très largement
-      // pour une moyenne d'alignement/séparation.
+      // Boucle inlinée (pas de fonction de rappel) pour la fluidité, et
+      // plafonnée à MAX_NEIGHBOR_CHECKS : sans ça, quand un essaim se
+      // resserre, des centaines de points tombent dans les mêmes cellules
+      // et le calcul explose. Un échantillon suffit pour la moyenne.
       const gcx = Math.floor(p.x / NEIGHBOR_RADIUS);
       const gcy = Math.floor(p.y / NEIGHBOR_RADIUS);
       let checked = 0;
@@ -485,14 +464,15 @@
       if(ny < headerHeight){ ny = 2 * headerHeight - ny; p.vy = Math.abs(p.vy) * BOUNCE_FACTOR; p.boostFrames = BOOST_DURATION; disturbed = true; }
       else if(ny > height){ ny = 2 * height - ny; p.vy = -Math.abs(p.vy) * BOUNCE_FACTOR; p.boostFrames = BOOST_DURATION; disturbed = true; }
       // Plafond bas strict : jamais plus bas que le titre "En attendant
-      // l'intervention" (négatif une fois ce titre remonté hors écran,
-      // ce qui fait disparaître la nuée du même coup)
+      // l'intervention" (devient négatif une fois remonté hors écran,
+      // ce qui fait aussi disparaître la nuée)
       if(ny > beeCeilingY){ ny = beeCeilingY; p.vy = -Math.abs(p.vy) * BOUNCE_FACTOR; p.boostFrames = BOOST_DURATION; disturbed = true; }
       p.x = nx;
       p.y = ny;
 
-      // Changement de reine mère : vérifié seulement si l'abeille vient d'être
-      // perturbée, ou de temps en temps sinon (évite 9000 vérifications/image)
+      // Changement de reine mère : vérifié seulement si l'abeille vient
+      // d'être perturbée, ou de temps en temps sinon (évite de tout
+      // revérifier à chaque image)
       if(disturbed || Math.random() < 0.05){
         for(let qi = 0; qi < queens.length; qi++){
           if(qi === p.queenIndex) continue;
@@ -514,10 +494,9 @@
         particles.forEach((p) => { step(p, grid); });
       }
 
-      // Rendu groupé par couleur : un seul chemin + un seul fill() par couleur,
-      // au lieu d'un appel par point. Essentiel pour rester fluide à 3000+ points.
-      // Les reines sont mêlées aux ouvrières dans les mêmes lots : rien ne
-      // permet de les repérer dans la masse.
+      // Rendu groupé par couleur : un seul chemin + un seul fill() par
+      // couleur, au lieu d'un appel par point. Les reines sont mêlées aux
+      // ouvrières dans les mêmes lots : rien ne permet de les repérer.
       colorBuckets.forEach((list, color) => {
         ctx.beginPath();
         for(let i = 0; i < list.length; i++){
@@ -888,7 +867,6 @@
     });
   })();
 
-  /* ---------- Rejouer le tracé du nid d'abeilles à chaque retour sur le hero ---------- */
   /* ---------- "Comment ça marche" : révélation progressive du gris vers la couleur ---------- */
   (function initStepsReveal(){
     const steps = document.querySelector(".steps");
@@ -903,6 +881,7 @@
     observer.observe(steps);
   })();
 
+  /* ---------- Rejouer le tracé du nid d'abeilles à chaque retour sur le hero ---------- */
   (function initCombReplay(){
     const heroEl = document.querySelector(".hero");
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -977,6 +956,42 @@
     observer.observe(heroBtn);
   })();
 
+  /* ---------- Sélecteur de langue de l'en-tête ---------- */
+  (function initLangSwitch(){
+    const trigger = document.getElementById("lang-trigger");
+    const menu = document.getElementById("lang-menu");
+    if(!trigger || !menu) return;
+
+    function closeMenu(){
+      menu.hidden = true;
+      trigger.setAttribute("aria-expanded", "false");
+    }
+
+    trigger.addEventListener("click", () => {
+      const isOpen = !menu.hidden;
+      menu.hidden = isOpen;
+      trigger.setAttribute("aria-expanded", String(!isOpen));
+    });
+
+    menu.querySelectorAll(".lang-option").forEach((opt) => {
+      opt.addEventListener("click", () => {
+        menu.querySelectorAll(".lang-option").forEach((o) => { o.classList.remove("active"); });
+        opt.classList.add("active");
+        trigger.querySelector(".lang-current").textContent = opt.dataset.lang.toUpperCase();
+        closeMenu();
+        // La traduction réelle du contenu de la page sera branchée ici
+        // une fois le système multilingue mis en place.
+      });
+    });
+
+    document.addEventListener("click", (e) => {
+      if(!menu.hidden && !e.target.closest(".lang-switch")){ closeMenu(); }
+    });
+    document.addEventListener("keydown", (e) => {
+      if(e.key === "Escape" && !menu.hidden){ closeMenu(); trigger.focus(); }
+    });
+  })();
+
   form.addEventListener("submit", async function(e){
     e.preventDefault();
     if(!form.checkValidity()){
@@ -1034,6 +1049,7 @@
         urgence: raw.urgence,
         message: raw.message || "—",
         handoff_link: handoffLink,
+        miel_alert: raw.miel_alert || "Non",
         a_photo: hasPhoto
           ? "Oui — voir l'email séparé envoyé par Netlify Forms (dossier " + requestId + ") pour la photo jointe."
           : "Aucune photo jointe."
@@ -1050,6 +1066,7 @@
         depuis: raw.depuis,
         urgence: raw.urgence,
         message: raw.message || "Aucun",
+        miel_alert: raw.miel_alert || "Non",
         a_photo: hasPhoto ? "Oui" : "Aucune",
         request_id: requestId
       };

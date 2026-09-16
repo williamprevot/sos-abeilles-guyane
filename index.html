@@ -96,13 +96,27 @@
       </svg>
       <div class="brand-name">S.O.S <span>Abeilles</span> Guyane</div>
     </div>
-    <button type="button" class="mobile-report-fab open-report">Signaler un essaim</button>
-    <nav>
-      <a href="#zone">Zone d'intervention</a>
-      <a href="#comment-ca-marche">Comment ça marche</a>
-      <a href="#consignes">En attendant</a>
-      <button type="button" class="btn-header open-report">Signaler un essaim</button>
-    </nav>
+    <div class="header-right">
+      <button type="button" class="mobile-report-fab open-report">Signaler un essaim</button>
+      <nav>
+        <a href="#zone">Zone d'intervention</a>
+        <a href="#comment-ca-marche">Comment ça marche</a>
+        <a href="#consignes">En attendant</a>
+        <button type="button" class="btn-header open-report">Signaler un essaim</button>
+      </nav>
+      <div class="lang-switch">
+        <button type="button" class="lang-trigger" id="lang-trigger" aria-haspopup="true" aria-expanded="false">
+          <span class="lang-current">FR</span> <span class="lang-caret">▾</span>
+        </button>
+        <ul class="lang-menu" id="lang-menu" hidden>
+          <li><button type="button" class="lang-option active" data-lang="fr">Français</button></li>
+          <li><button type="button" class="lang-option" data-lang="en">English</button></li>
+          <li><button type="button" class="lang-option" data-lang="es">Español</button></li>
+          <li><button type="button" class="lang-option" data-lang="pt">Português</button></li>
+          <li><button type="button" class="lang-option" data-lang="zh">中文</button></li>
+        </ul>
+      </div>
+    </div>
   </div>
 </header>
 
@@ -135,6 +149,32 @@
         <circle class="dot" cx="135" cy="227" r="3"/>
       </g>
     </svg>
+  </div>
+</section>
+
+<section id="a-propos">
+  <div class="wrap about-wrap">
+    <div class="section-head">
+      <h2>À propos de nous</h2>
+      <p>Une entreprise familiale d'apiculture, établie depuis 2006 aux alentours de Rémire-Montjoly, animée par trois valeurs simples.</p>
+    </div>
+    <div class="about-grid">
+      <div class="about-card">
+        <span class="about-icon">📡</span>
+        <h3>Modernité</h3>
+        <p>Un savoir-faire apicole familial, allié à des outils actuels comme ce site, pour un service réactif et accessible en ligne.</p>
+      </div>
+      <div class="about-card">
+        <span class="about-icon">🍯</span>
+        <h3>Qualité</h3>
+        <p>Chaque essaim est capturé vivant et relocalisé avec soin, dans le respect du bien-être animal et de l'environnement guyanais.</p>
+      </div>
+      <div class="about-card">
+        <span class="about-icon">⚖️</span>
+        <h3>Équité</h3>
+        <p>Un service pensé pour rester juste, aussi bien pour les personnes qui nous signalent un essaim que pour notre travail d'apiculteur.</p>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -244,8 +284,9 @@
         <div class="step-num">3</div>
         <h3>L'apiculteur intervient</h3>
         <p>
-          Dès qu'il prend en charge votre demande, il vous appelle directement
-          pour programmer un horaire d'intervention.
+          Dès qu'il prend en charge votre demande, il vous contacte directement
+          (le plus souvent par téléphone, parfois par email) pour programmer un
+          horaire d'intervention.
         </p>
       </article>
     </div>
@@ -291,6 +332,14 @@
           <details class="faq-item">
             <summary>Qui intervient chez moi ?</summary>
             <p>Un <span class="info-key">apiculteur local</span>, pas une entreprise de nuisibles. Il capture l'essaim et le relocalise vivant dans une ruche, pour préserver les abeilles.</p>
+          </details>
+          <details class="faq-item">
+            <summary>Est-ce vraiment gratuit ?</summary>
+            <p><span class="info-key">Oui, dans l'immense majorité des cas.</span> Dans certaines situations particulières, une participation peut être convenue directement entre vous et l'apiculteur, à la discrétion des deux parties.</p>
+          </details>
+          <details class="faq-item">
+            <summary>Comment l'apiculteur me contacte-t-il ?</summary>
+            <p>La plupart du temps <span class="info-key">par téléphone</span>, pour convenir rapidement d'un horaire. Il peut aussi vous écrire par email, selon sa disponibilité.</p>
           </details>
           <details class="faq-item">
             <summary>Délai avant l'intervention ?</summary>
@@ -469,6 +518,12 @@
 
         <div class="chat-step" data-step="11" hidden>
           <div class="recap-card" id="recap-card"></div>
+          <label class="miel-card" for="miel-alert">
+            <input type="checkbox" id="miel-alert" name="miel_alert" value="Oui">
+            <span class="miel-icon">🍯</span>
+            <span>M'avertir par email quand du miel est disponible à la vente</span>
+          </label>
+          <p class="privacy-note">Vos données ne sont utilisées que pour organiser cette intervention. <a href="confidentialite.html" target="_blank" rel="noopener">Politique de confidentialité</a>.</p>
           <div class="submit-row" id="submit-row">
             <button type="submit" class="btn-submit" id="submit-btn">Envoyer le signalement</button>
             <span class="form-status" id="form-status"></span>
@@ -502,7 +557,7 @@
 
 <footer>
   <div class="wrap">
-    <p>&copy; 2026 S.O.S Abeilles Guyane. Tous droits réservés.</p>
+    <p><a href="#a-propos">À propos</a> — <a href="confidentialite.html">Politique de confidentialité</a> — &copy; 2026 S.O.S Abeilles Guyane. Tous droits réservés.</p>
   </div>
 </footer>
 
