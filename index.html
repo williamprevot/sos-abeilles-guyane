@@ -152,31 +152,8 @@
   </div>
 </section>
 
-<section id="a-propos">
-  <div class="wrap about-wrap">
-    <div class="section-head">
-      <h2>À propos de nous</h2>
-      <p>Une entreprise familiale d'apiculture, établie depuis 2006 aux alentours de Rémire-Montjoly, animée par trois valeurs simples.</p>
-    </div>
-    <div class="about-grid">
-      <div class="about-card">
-        <span class="about-icon">📡</span>
-        <h3>Modernité</h3>
-        <p>Un savoir-faire apicole familial, allié à des outils actuels comme ce site, pour un service réactif et accessible en ligne.</p>
-      </div>
-      <div class="about-card">
-        <span class="about-icon">🍯</span>
-        <h3>Qualité</h3>
-        <p>Chaque essaim est capturé vivant et relocalisé avec soin, dans le respect du bien-être animal et de l'environnement guyanais.</p>
-      </div>
-      <div class="about-card">
-        <span class="about-icon">⚖️</span>
-        <h3>Équité</h3>
-        <p>Un service pensé pour rester juste, aussi bien pour les personnes qui nous signalent un essaim que pour notre travail d'apiculteur.</p>
-      </div>
-    </div>
-  </div>
-</section>
+<!-- La section "À propos" vit désormais uniquement dans sa boîte de dialogue flottante
+     (voir plus bas, juste avant le script), ouverte au clic sur "À propos" dans le pied de page. -->
 
 <section id="nidification">
   <div class="wrap">
@@ -523,7 +500,7 @@
             <span class="miel-icon">🍯</span>
             <span>M'avertir par email quand du miel est disponible à la vente</span>
           </label>
-          <p class="privacy-note">Vos données ne sont utilisées que pour organiser cette intervention. <a href="confidentialite.html" target="_blank" rel="noopener">Politique de confidentialité</a>.</p>
+          <p class="privacy-note">Vos données ne sont utilisées que pour organiser cette intervention. <button type="button" class="link-like open-privacy">Politique de confidentialité</button>.</p>
           <div class="submit-row" id="submit-row">
             <button type="submit" class="btn-submit" id="submit-btn">Envoyer le signalement</button>
             <span class="form-status" id="form-status"></span>
@@ -538,6 +515,78 @@
         </div>
       </form>
     </div>
+</div>
+
+<!-- Boîte de dialogue flottante "À propos de nous" — même principe que la boîte
+     "Signaler un essaim" ci-dessus, ouverte uniquement au clic sur "À propos" dans le pied de page. -->
+<div class="modal-backdrop" id="about-backdrop" hidden></div>
+<div class="report-modal about-modal" id="about-modal" hidden role="dialog" aria-modal="true" aria-labelledby="about-modal-title">
+  <button type="button" class="modal-close" id="about-modal-close" aria-label="Fermer">&times;</button>
+  <div class="section-head">
+    <h2 id="about-modal-title">À propos de nous</h2>
+    <p>Une entreprise familiale d'apiculture, établie depuis 2006 aux alentours de Rémire-Montjoly, animée par trois valeurs simples.</p>
+  </div>
+  <div class="about-grid">
+    <div class="about-card">
+      <span class="about-icon">📡</span>
+      <h3>Modernité</h3>
+      <p>Un savoir-faire apicole familial, allié à des outils actuels comme ce site, pour un service réactif et accessible en ligne.</p>
+    </div>
+    <div class="about-card">
+      <span class="about-icon">🍯</span>
+      <h3>Qualité</h3>
+      <p>Chaque essaim est capturé vivant et relocalisé avec soin, dans le respect du bien-être animal et de l'environnement guyanais.</p>
+    </div>
+    <div class="about-card">
+      <span class="about-icon">⚖️</span>
+      <h3>Équité</h3>
+      <p>Un service pensé pour rester juste, aussi bien pour les personnes qui nous signalent un essaim que pour notre travail d'apiculteur.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Boîte de dialogue flottante "Politique de confidentialité" — même principe que les deux
+     boîtes ci-dessus, ouverte au clic sur "Politique de confidentialité" (pied de page ou formulaire). -->
+<div class="modal-backdrop" id="privacy-backdrop" hidden></div>
+<div class="report-modal privacy-modal" id="privacy-modal" hidden role="dialog" aria-modal="true" aria-labelledby="privacy-modal-title">
+  <button type="button" class="modal-close" id="privacy-modal-close" aria-label="Fermer">&times;</button>
+  <div class="section-head">
+    <h2 id="privacy-modal-title">Politique de confidentialité</h2>
+    <p>Comment nous traitons vos données lorsque vous signalez un essaim — en clair, sans jargon inutile.</p>
+  </div>
+  <div class="legal-content">
+    <p class="legal-updated">Dernière mise à jour : septembre 2026</p>
+
+    <h3>Qui traite vos données ?</h3>
+    <p>Le responsable du traitement est l'apiculteur qui exploite le service S.O.S Abeilles Guyane. Le développeur du site intervient uniquement comme <span class="info-key">sous-traitant technique</span>, pour la maintenance — il n'utilise vos données à aucune autre fin.</p>
+
+    <h3>Quelles données sont collectées ?</h3>
+    <p>Lorsque vous signalez un essaim, nous collectons :</p>
+    <ul>
+      <li>Votre nom et numéro de téléphone</li>
+      <li>Votre adresse email</li>
+      <li>La commune et l'adresse (ou point de repère) de l'essaim</li>
+      <li>L'emplacement, l'ancienneté et l'urgence que vous indiquez</li>
+      <li>Une photo de l'essaim, si vous en joignez une</li>
+      <li>Un message libre, si vous en ajoutez un</li>
+      <li>Votre choix concernant les alertes de disponibilité de miel</li>
+    </ul>
+
+    <h3>Pourquoi ?</h3>
+    <p>Uniquement pour organiser la collecte : vous identifier, vous localiser, évaluer l'urgence, et permettre à l'apiculteur de vous contacter pour convenir d'un horaire. Les alertes miel reposent sur un consentement séparé, donné librement et retirable à tout moment.</p>
+
+    <h3>Qui y a accès ?</h3>
+    <p>Seuls l'apiculteur et le développeur du site (maintenance technique) accèdent à votre signalement. Vos données ne sont ni vendues, ni partagées à des fins commerciales. Deux prestataires les traitent en notre nom, uniquement pour l'acheminer : <span class="info-key">Netlify</span> (hébergement) et <span class="info-key">EmailJS</span> (envoi des emails), tous deux engagés contractuellement à un niveau de protection conforme au RGPD.</p>
+
+    <h3>Combien de temps sont-elles conservées ?</h3>
+    <p>12 mois après l'intervention, puis suppression, sauf obligation légale contraire. Si vous avez accepté les alertes miel, votre email est conservé jusqu'à votre désinscription.</p>
+
+    <h3>Vos droits</h3>
+    <p>Vous disposez d'un droit d'accès, de rectification, d'effacement, de limitation, d'opposition et de portabilité sur vos données, ainsi que du droit de retirer votre consentement aux alertes miel à tout moment. Pour l'exercer, utilisez le formulaire <span class="info-key">« Signaler un essaim »</span> du site et indiquez votre demande dans le champ message — nous vous répondrons sous 30 jours. Vous pouvez aussi introduire une réclamation auprès de la <a href="https://www.cnil.fr" target="_blank" rel="noopener">CNIL</a>.</p>
+
+    <h3>Cookies et traceurs</h3>
+    <p>Ce site n'utilise aucun cookie publicitaire. Certains services tiers intégrés (police d'écriture Google Fonts, fond de carte MapTiler) peuvent déposer des cookies techniques nécessaires à leur fonctionnement. Nous pourrons également utiliser, à l'avenir, des cookies de mesure d'audience (statistiques de visite, cartes de chaleur des clics et déplacements de souris) afin d'améliorer le site ; le cas échéant, ils ne seront déposés qu'après avoir recueilli votre consentement.</p>
+  </div>
 </div>
 
 <!-- Panneau visible uniquement quand l'apiculteur clique sur le lien "prise en charge" reçu par email -->
@@ -556,8 +605,14 @@
 </section>
 
 <footer>
-  <div class="wrap">
-    <p><a href="#a-propos">À propos</a> — <a href="confidentialite.html">Politique de confidentialité</a> — &copy; 2026 S.O.S Abeilles Guyane. Tous droits réservés.</p>
+  <div class="wrap footer-links">
+    <button type="button" class="footer-link open-about">À propos de nous</button>
+    <span class="footer-sep" aria-hidden="true">•</span>
+    <button type="button" class="footer-link open-privacy">Politique de confidentialité</button>
+  </div>
+
+  <div class="wrap footer-bottom">
+    <p>&copy; <strong>2026</strong> S.O.S Abeilles Guyane. Tous droits réservés.</p>
   </div>
 </footer>
 
