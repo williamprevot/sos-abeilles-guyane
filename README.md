@@ -4,21 +4,30 @@ Site vitrine + formulaire de signalement pour un service gratuit de collecte et
 relocalisation d'essaims d'abeilles en Guyane française (zone CACL : Cayenne,
 Rémire-Montjoly, Matoury, Macouria, Montsinéry-Tonnegrande, Roura).
 
-Site statique en un seul fichier HTML (aucun framework, aucun build) :
-chatbot de signalement, carte interactive, FAQ, animation d'essaim en canvas.
+Site statique (aucun framework, aucun build) : chatbot de signalement, carte
+interactive, FAQ, animation d'essaim en canvas.
 
-## Fichiers
+## Structure du projet
 
-- `index.html` — le site complet (HTML + CSS + JS inline)
-- `robots.txt` — autorise l'indexation par les moteurs de recherche
-- `sitemap.xml` — plan du site pour le référencement
+```
+index.html        — structure de la page uniquement
+css/styles.css     — tous les styles
+js/script.js       — toute la logique (chatbot, carte, animation, formulaire)
+robots.txt         — autorise l'indexation par les moteurs de recherche
+sitemap.xml        — plan du site pour le référencement
+```
+
+Le HTML, le CSS et le JavaScript sont séparés en fichiers distincts pour
+faciliter la maintenance : on modifie l'apparence dans `css/styles.css` sans
+toucher au comportement, et le comportement dans `js/script.js` sans toucher
+à la structure. Aucune étape de compilation n'est nécessaire — ces fichiers
+sont chargés tels quels par le navigateur.
 
 ## Configuration nécessaire avant mise en ligne
 
-Le site fonctionne visuellement tel quel, mais **trois clés gratuites**
-doivent être renseignées pour que le formulaire et la carte marchent
-réellement. Elles sont toutes en clair dans `index.html`, repérables par
-leur nom :
+Trois clés gratuites doivent être renseignées dans `js/script.js` pour que le
+formulaire et la carte fonctionnent réellement (repérables par leur nom en
+majuscules) :
 
 ### 1. EmailJS (envoi des emails) — gratuit, 200 emails/mois
 
@@ -28,35 +37,31 @@ leur nom :
    - `template_notification` (à l'apiculteur)
    - `template_confirmation` (au client, immédiat)
    - `template_prise_en_charge` (au client, quand l'apiculteur confirme)
-4. Dans `index.html`, remplacer :
+4. Dans `js/script.js`, remplacer :
    - `VOTRE_PUBLIC_KEY` → votre Public Key EmailJS
    - `VOTRE_SERVICE_ID` → votre Service ID EmailJS
-
-Le contenu suggéré pour chaque template (variables `{{...}}` à utiliser) est
-détaillé dans l'historique de conversation avec Claude ; les noms de
-variables correspondent aux champs du formulaire (`client_nom`,
-`commune`, `handoff_link`, etc.).
 
 ### 2. MapTiler (fond de carte) — gratuit, sans carte bancaire
 
 1. Créer un compte sur [maptiler.com](https://maptiler.com)
-2. Récupérer la clé API
-3. Dans `index.html`, remplacer `VOTRE_CLE_MAPTILER` par cette clé
+2. Récupérer la clé API (déjà fait : `BWLQgt3asW0Wt5A6AKvg`)
+3. Une fois le nom de domaine définitif connu, la restreindre dans
+   MapTiler → API Keys → Allowed HTTP Origins, pour la sécurité.
 
 ### 3. Netlify Forms (notification photo) — après déploiement
 
-Une fois le site déployé sur Netlify :
 Site settings → Forms → Form notifications → Add notification →
-Email notification → mettre `maracudja973@gmail.com`.
+Email notification → `maracudja973@gmail.com`.
 
 ## Déploiement
 
-Voir la procédure recommandée (Netlify relié à GitHub) dans la conversation
-avec Claude, ou simplement glisser-déposer ce dossier sur
-[app.netlify.com/drop](https://app.netlify.com/drop) pour une mise en ligne
-immédiate.
+Le dépôt est relié à Netlify : chaque `git push` sur la branche `main`
+redéploie automatiquement le site (aucune action manuelle nécessaire).
 
-## Avant de mettre en ligne pour de vrai
+## Sécurité
 
-- Ne pas oublier la clé MapTiler et les identifiants EmailJS (voir ci-dessus)
-- Vérifier que `robots.txt` et `sitemap.xml` pointent vers le vrai nom de domaine
+- HTTPS automatique via Netlify.
+- Un champ anti-robot (honeypot) protège le formulaire des soumissions
+  automatisées.
+- Activer la limite de taux et la liste blanche de domaines dans les
+  tableaux de bord EmailJS et MapTiler une fois le domaine final connu.
