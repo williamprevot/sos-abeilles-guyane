@@ -19,7 +19,664 @@
      // adresses réellement confidentielles.
    
      emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
-   
+
+     /* =========================================================
+        SYSTÈME MULTILINGUE (FR / EN / ES / PT)
+        - Le français reste la langue de référence : toutes les clés
+          manquantes dans une autre langue retombent automatiquement
+          sur le texte français (jamais de trou dans l'affichage).
+        - data-i18n="clé"           -> el.textContent = traduction
+        - data-i18n-html="clé"      -> el.innerHTML = traduction (uniquement
+          pour du texte statique avec <br>/<span>, jamais d'éléments
+          cliquables à l'intérieur, pour ne jamais perdre un écouteur
+          d'événement en régénérant le DOM)
+        - data-i18n-aria-label="clé"  -> attribut aria-label
+        - data-i18n-placeholder="clé" -> attribut placeholder
+        - L'email reçu par l'apiculteur reste TOUJOURS en français, quelle
+          que soit la langue choisie par le visiteur : seuls les modèles
+          EmailJS eux-mêmes (configurés sur emailjs.com) déterminent la
+          langue des emails, et ce fichier envoie toujours les valeurs
+          "canoniques" en français pour les champs à choix (commune,
+          depuis, urgence) — voir data-value sur les boutons de choix.
+        ========================================================= */
+     const I18N = {
+       fr: {
+         "cta.report": "Signaler un essaim",
+         "nav.zone": "Zone d'intervention",
+         "nav.comment": "Comment ça marche",
+         "nav.attendant": "En attendant",
+         "hero.title": "Un essaim d'abeilles installé chez vous ?🐝",
+         "hero.lead": "Nous récupérons et relocalisons les abeilles dans leur milieu, plutôt que de les détruire.<br><br>Signalez un essaim en quelques clics, un apiculteur local prend le relais.",
+         "hero.btnGhost": "Que faire en attendant ?",
+         "nid.title": "Où les essaims aiment s'installer",
+         "nid.subtitle": "Survolez les différentes zones pour découvrir les emplacements où les essaims s'installent le plus souvent.",
+         "nid.hotspot1.aria": "Branches et troncs d'arbres : le lieu le plus fréquent, souvent une branche basse ou un tronc creux",
+         "nid.hotspot1.tip": "Branches et troncs<br><small>le lieu le plus fréquent</small>",
+         "nid.hotspot2.aria": "Faux plafonds et combles : un endroit sombre et sec en hauteur",
+         "nid.hotspot2.tip": "Faux plafonds, combles<br><small>sombre et sec en hauteur</small>",
+         "nid.hotspot3.aria": "Seaux et pneus abandonnés : surtout secs et à l'abri de la pluie",
+         "nid.hotspot3.tip": "Seaux, pneus abandonnés<br><small>secs et à l'abri de la pluie</small>",
+         "nid.hotspot4.aria": "Compteurs d'eau ou électriques : leur cavité protégée est idéale",
+         "nid.hotspot4.tip": "Compteurs d'eau / électriques<br><small>cavité protégée idéale</small>",
+         "nid.hotspot5.aria": "Cartons et caisses vides : laissés dehors ou dans un abri de jardin",
+         "nid.hotspot5.tip": "Cartons, caisses vides<br><small>abri de jardin, garage</small>",
+         "zone.title": "Zone d'intervention",
+         "zone.subtitle": "Le service couvre le territoire de la CACL (Communauté d'Agglomération du Centre Littoral).",
+         "zone.mapAria": "Carte géographique de la zone d'intervention : Cayenne, Rémire-Montjoly, Matoury, Macouria, Montsinéry-Tonnegrande et Roura",
+         "zone.mapNote": "Carte OpenStreetMap réelle : le cercle miel indique la zone d'intervention globale, de Macouria à Roura, à titre indicatif — pas une limite administrative exacte.",
+         "steps.title": "Comment ça marche",
+         "steps.subtitle": "Trois étapes, du signalement à l'intervention.",
+         "steps.1.title": "Vous signalez",
+         "steps.1.text": "Remplissez une description complète de l'essaim grâce à notre chat interactif.",
+         "steps.2.title": "Vous recevez une confirmation",
+         "steps.2.text": "Un email vous confirme immédiatement que votre signalement est bien arrivé et en cours d'examen.",
+         "steps.3.title": "L'apiculteur intervient",
+         "steps.3.text": "Dès qu'il prend en charge votre demande, il vous contacte directement (le plus souvent par téléphone, parfois par email) pour programmer un horaire d'intervention.",
+         "consignes.title": "En attendant l'intervention",
+         "consignes.subtitle": "Un essaim posé est généralement calme. Voici les bons réflexes.",
+         "tab.faire": "À faire",
+         "tab.eviter": "À éviter",
+         "tab.faq": "Questions fréquentes",
+         "faire.1": "<span class=\"info-key\">10 mètres minimum</span> de distance avec l'essaim",
+         "faire.2": "Fenêtres et portes <span class=\"info-key\">doivent être fermées</span>",
+         "faire.3": "Maintenir enfants et animaux <span class=\"info-key\">éloignés</span> de la zone d'essaimage",
+         "faire.4": "Maintenir <span class=\"info-key\">éloignées</span> les personnes allergiques",
+         "faire.5": "Prévenir les voisins si l'essaim est en zone partagée",
+         "eviter.1": "<span class=\"info-key\">Jamais</span> d'eau, d'insecticide ou de bombe aérosol",
+         "eviter.2": "<span class=\"info-key\">Ne pas</span> déplacer ou détruire l'essaim soi-même",
+         "eviter.3": "Pas de fumée ni de feu à proximité",
+         "eviter.4": "Eviter les Bruits et vibrations (tondeuse, perceuse, musique, bruits d'animaux allées et venues)",
+         "faq.1.q": "Qui intervient chez moi ?",
+         "faq.1.a": "Un <span class=\"info-key\">apiculteur local</span>, pas une entreprise de nuisibles. Il capture l'essaim et le relocalise vivant dans une ruche, pour préserver les abeilles.",
+         "faq.2.q": "Est-ce vraiment gratuit ?",
+         "faq.2.a": "<span class=\"info-key\">Oui, dans l'immense majorité des cas.</span> Dans certaines situations particulières, une participation peut être convenue directement entre vous et l'apiculteur, à la discrétion des deux parties.",
+         "faq.3.q": "Comment l'apiculteur me contacte-t-il ?",
+         "faq.3.a": "La plupart du temps <span class=\"info-key\">par téléphone</span>, pour convenir rapidement d'un horaire. Il peut aussi vous écrire par email, selon sa disponibilité.",
+         "faq.4.q": "Délai avant l'intervention ?",
+         "faq.4.a": "<span class=\"info-key\">24 à 48h</span> selon disponibilité. Priorité aux situations urgentes (passage, enfants et animaux).",
+         "faq.5.q": "Délai de réponse à mon signalement ?",
+         "faq.5.a": "Confirmation <span class=\"info-key\">immédiate</span> par email, puis appel de l'apiculteur pour convenir d'un horaire.",
+         "faq.6.q": "Déjà signalé par un voisin, je signale quand même ?",
+         "faq.6.a": "Inutile si vous êtes <span class=\"info-key\">certain</span> qu'il l'a déjà été. En cas de doute, signalez tout de même.",
+         "faq.7.q": "Piqûre ou réaction allergique ?",
+         "faq.7.a": "Gonflement, difficulté à respirer, malaise : <span class=\"info-key\">urgence</span>, appelez le 15 ou le 112 immédiatement.",
+         "faq.8.q": "Pourquoi éviter le bruit ?",
+         "faq.8.a": "Les vibrations stressent les abeilles et peuvent déclencher une <span class=\"info-key\">réaction défensive</span> collective.",
+         "faq.9.q": "Comment protéger mes animaux ?",
+         "faq.9.a": "Rentrez-les, ou tenez-les au calme à <span class=\"info-key\">10 mètres minimum</span> de l'essaim.",
+         "loading.aria": "Envoi du signalement en cours",
+         "loading.text": "Envoi de votre signalement...",
+         "modal.close": "Fermer",
+         "report.title": "Signaler un essaim",
+         "report.subtitle": "Répondez aux questions les unes après les autres. C'est rapide !",
+         "step1.label": "Comment vous appelez-vous ?",
+         "step2.label": "Quel est votre numéro de téléphone ?",
+         "step3.label": "Quel est votre email ?",
+         "step3.hint": "Pour obtenir la confirmation de prise en charge.",
+         "step4.label": "Dans quelle commune se trouve l'essaim ?",
+         "step5.label": "Precisez une adresse, ou un point de repère",
+         "step5.placeholder": "Rue, lotissement, repère...",
+         "step6.label": "Où se trouve l'essaim exactement ?",
+         "step6.hint": "Arbre, mur, compteur électrique, véhicule...",
+         "step7.label": "Depuis quand est-il là ?",
+         "step8.legend": "Comment évalueriez-vous l'urgence de la situation ?",
+         "step8.opt1": "Faible — zone peu fréquentée",
+         "step8.opt2": "Moyenne — proche d'un passage",
+         "step8.opt3": "Élevée — proche d'enfants, école ou lieu public",
+         "step9.label": "Avez-vous une photo de l'essaim ?",
+         "step9.hint": "Facultatif — aide l'apiculteur à évaluer la situation. Compressée automatiquement avant l'envoi.",
+         "step10.label": "Une information complémentaire à ajouter ?",
+         "step10.hint": "Taille approximative, comportement observé, accès au terrain...",
+         "btn.continue": "Continuer",
+         "btn.skip": "Passer cette étape",
+         "depuis.opt1": "Aujourd'hui",
+         "depuis.opt2": "Depuis hier",
+         "depuis.opt3": "Depuis plus de 2 jours",
+         "depuis.opt4": "Je ne sais pas",
+         "recap.privacyPrefix": "Vos données ne sont utilisées que pour organiser cette intervention.",
+         "privacy.linkLabel": "Politique de confidentialité",
+         "btn.submit": "Envoyer le signalement",
+         "success.title": "Signalement envoyé !",
+         "success.text": "Un apiculteur local prendra en charge votre demande d'intervention.",
+         "about.title": "À propos de nous",
+         "about.subtitle": "Une entreprise familiale d'apiculture, établie depuis 2006 aux alentours de Cayenne, animée par trois valeurs simples.",
+         "about.card1.title": "Modernité",
+         "about.card1.text": "Un savoir-faire apicole familial, allié à des outils actuels comme ce site, pour un service réactif et accessible en ligne.",
+         "about.card2.title": "Qualité",
+         "about.card2.text": "Chaque essaim est capturé vivant et relocalisé avec soin, dans le respect du bien-être animal et de l'environnement guyanais.",
+         "about.card3.title": "Équité",
+         "about.card3.text": "Un service pensé pour rester juste, aussi bien pour les personnes qui nous signalent un essaim que pour nos apiculteurs.",
+         "footer.copyright": "&copy; <strong>2026</strong> S.O.S Abeilles Guyane. Tous droits réservés.",
+         "bot.step1": "Bonjour 👋 Je vais vous poser quelques questions pour organiser la collecte de l'essaim. Comment vous appelez-vous ?",
+         "bot.step2": "Merci. Quel est votre numéro de téléphone ?",
+         "bot.step3": "Et votre adresse email ? Elle servira à vous envoyer la confirmation de prise en charge.",
+         "bot.step4": "Dans quelle commune se trouve l'essaim ?",
+         "bot.step5": "Quelle est l'adresse précise, ou un point de repère ?",
+         "bot.step6": "Où se trouve l'essaim exactement ?",
+         "bot.step7": "Depuis quand est-il là ?",
+         "bot.step8": "Comment évalueriez-vous l'urgence de la situation ?",
+         "bot.step9": "Avez-vous une photo de l'essaim ? Ça aide beaucoup l'apiculteur avant de se déplacer.",
+         "bot.step10": "Une dernière information à ajouter avant l'envoi ?",
+         "bot.step11": "Voici le récapitulatif de votre signalement. Vérifiez que tout est correct avant l'envoi.",
+         "progress.step": "Étape {n} sur 10",
+         "progress.last": "Dernière étape — vérifiez et envoyez",
+         "validator.nom.tooShort": "Merci d'indiquer votre nom (2 caractères minimum).",
+         "validator.nom.invalid": "Merci d'indiquer un nom valide.",
+         "validator.telephone.tooShort": "Merci d'indiquer un numéro de téléphone valide (9 chiffres minimum, ex. 0694 12 34 56).",
+         "validator.telephone.tooLong": "Ce numéro de téléphone semble trop long — vérifiez la saisie.",
+         "validator.email.invalid": "Merci d'indiquer une adresse email valide (ex. nom@exemple.com).",
+         "validator.adresse.tooShort": "Merci de préciser l'adresse ou un point de repère.",
+         "validator.emplacement.tooShort": "Merci de préciser où se trouve l'essaim.",
+         "answer.noPhoto": "Aucune photo",
+         "answer.nothingToAdd": "Rien à ajouter",
+         "skip.noPhoto": "Pas de photo",
+         "recap.label.nom": "Nom",
+         "recap.label.telephone": "Téléphone",
+         "recap.label.email": "Email",
+         "recap.label.commune": "Commune",
+         "recap.label.adresse": "Adresse",
+         "recap.label.emplacement": "Emplacement",
+         "recap.label.depuis": "Depuis quand",
+         "recap.label.urgence": "Urgence",
+         "recap.label.photo": "Photo",
+         "recap.label.message": "Message",
+         "recap.value.noPhoto": "Aucune",
+         "recap.value.noMessage": "Aucun",
+         "recap.edit": "Modifier",
+         "error.send": "Erreur d'envoi. Réessayez ou contactez-nous autrement.",
+         "meta.title": "S.O.S Abeilles Guyane — Collecte gratuite d'essaims",
+         "meta.description": "Service gratuit et local de collecte et relocalisation d'essaims d'abeilles en Guyane (CACL) : Cayenne, Rémire-Montjoly, Matoury, Macouria, Montsinéry-Tonnegrande, Roura. Signalement en ligne, réponse rapide."
+       },
+       en: {
+         "cta.report": "Report a swarm",
+         "nav.zone": "Service area",
+         "nav.comment": "How it works",
+         "nav.attendant": "While you wait",
+         "hero.title": "A bee swarm settled at your place?🐝",
+         "hero.lead": "We collect and relocate bees in their environment, rather than destroy them.<br><br>Report a swarm in a few clicks, a local beekeeper takes it from there.",
+         "hero.btnGhost": "What to do while you wait?",
+         "nid.title": "Where swarms like to settle",
+         "nid.subtitle": "Hover over the different areas to discover where swarms most often settle.",
+         "nid.hotspot1.aria": "Branches and tree trunks: the most common spot, often a low branch or a hollow trunk",
+         "nid.hotspot1.tip": "Branches and trunks<br><small>the most common spot</small>",
+         "nid.hotspot2.aria": "False ceilings and attics: a dark, dry spot up high",
+         "nid.hotspot2.tip": "False ceilings, attics<br><small>dark and dry, up high</small>",
+         "nid.hotspot3.aria": "Abandoned buckets and tyres: mainly dry and sheltered from rain",
+         "nid.hotspot3.tip": "Buckets, old tyres<br><small>dry, sheltered from rain</small>",
+         "nid.hotspot4.aria": "Water or electricity meters: their protected cavity is ideal",
+         "nid.hotspot4.tip": "Water / electric meters<br><small>ideal protected cavity</small>",
+         "nid.hotspot5.aria": "Cardboard boxes and empty crates: left outside or in a garden shed",
+         "nid.hotspot5.tip": "Boxes, empty crates<br><small>garden shed, garage</small>",
+         "zone.title": "Service area",
+         "zone.subtitle": "The service covers the CACL area (Communauté d'Agglomération du Centre Littoral).",
+         "zone.mapAria": "Map of the service area: Cayenne, Rémire-Montjoly, Matoury, Macouria, Montsinéry-Tonnegrande and Roura",
+         "zone.mapNote": "Real OpenStreetMap map: the honey-coloured circle shows the overall service area, from Macouria to Roura, as a rough guide only — not an exact administrative boundary.",
+         "steps.title": "How it works",
+         "steps.subtitle": "Three steps, from report to intervention.",
+         "steps.1.title": "You report it",
+         "steps.1.text": "Fill in a full description of the swarm through our interactive chat.",
+         "steps.2.title": "You get a confirmation",
+         "steps.2.text": "An email immediately confirms your report has been received and is being reviewed.",
+         "steps.3.title": "The beekeeper steps in",
+         "steps.3.text": "As soon as they take on your request, they contact you directly (usually by phone, sometimes by email) to arrange a time for the intervention.",
+         "consignes.title": "While you wait for the intervention",
+         "consignes.subtitle": "A settled swarm is usually calm. Here are the right things to do.",
+         "tab.faire": "Do",
+         "tab.eviter": "Don't",
+         "tab.faq": "FAQ",
+         "faire.1": "<span class=\"info-key\">10 metres minimum</span> away from the swarm",
+         "faire.2": "Windows and doors <span class=\"info-key\">must stay closed</span>",
+         "faire.3": "Keep children and pets <span class=\"info-key\">away</span> from the swarming area",
+         "faire.4": "Keep people with allergies <span class=\"info-key\">away</span>",
+         "faire.5": "Warn your neighbours if the swarm is in a shared area",
+         "eviter.1": "<span class=\"info-key\">Never</span> use water, insecticide or aerosol spray",
+         "eviter.2": "<span class=\"info-key\">Do not</span> move or destroy the swarm yourself",
+         "eviter.3": "No smoke or fire nearby",
+         "eviter.4": "Avoid noise and vibrations (mower, drill, music, pets coming and going)",
+         "faq.1.q": "Who comes to my place?",
+         "faq.1.a": "A <span class=\"info-key\">local beekeeper</span>, not a pest control company. They capture the swarm and relocate it alive into a hive, to protect the bees.",
+         "faq.2.q": "Is it really free?",
+         "faq.2.a": "<span class=\"info-key\">Yes, in the vast majority of cases.</span> In certain specific situations, a contribution may be agreed directly between you and the beekeeper, at both parties' discretion.",
+         "faq.3.q": "How does the beekeeper contact me?",
+         "faq.3.a": "Most of the time <span class=\"info-key\">by phone</span>, to quickly agree on a time. They may also write to you by email, depending on their availability.",
+         "faq.4.q": "How long before the intervention?",
+         "faq.4.a": "<span class=\"info-key\">24 to 48h</span> depending on availability. Priority goes to urgent situations (foot traffic, children and pets).",
+         "faq.5.q": "How long to respond to my report?",
+         "faq.5.a": "<span class=\"info-key\">Immediate</span> confirmation by email, then a call from the beekeeper to arrange a time.",
+         "faq.6.q": "A neighbour already reported it, should I report it too?",
+         "faq.6.a": "Not needed if you're <span class=\"info-key\">certain</span> it has already been reported. If in doubt, report it anyway.",
+         "faq.7.q": "Sting or allergic reaction?",
+         "faq.7.a": "Swelling, difficulty breathing, feeling faint: <span class=\"info-key\">emergency</span>, call 15 or 112 immediately.",
+         "faq.8.q": "Why avoid noise?",
+         "faq.8.a": "Vibrations stress the bees and can trigger a collective <span class=\"info-key\">defensive reaction</span>.",
+         "faq.9.q": "How do I protect my pets?",
+         "faq.9.a": "Bring them inside, or keep them calm at least <span class=\"info-key\">10 metres</span> from the swarm.",
+         "loading.aria": "Sending your report",
+         "loading.text": "Sending your report...",
+         "modal.close": "Close",
+         "report.title": "Report a swarm",
+         "report.subtitle": "Answer the questions one by one. It's quick!",
+         "step1.label": "What's your name?",
+         "step2.label": "What's your phone number?",
+         "step3.label": "What's your email?",
+         "step3.hint": "To receive confirmation that your request is being handled.",
+         "step4.label": "Which town is the swarm in?",
+         "step5.label": "Please specify an address, or a landmark",
+         "step5.placeholder": "Street, housing estate, landmark...",
+         "step6.label": "Exactly where is the swarm?",
+         "step6.hint": "Tree, wall, electric meter, vehicle...",
+         "step7.label": "How long has it been there?",
+         "step8.legend": "How would you rate the urgency of the situation?",
+         "step8.opt1": "Low — rarely used area",
+         "step8.opt2": "Medium — near a walkway",
+         "step8.opt3": "High — near children, a school or a public place",
+         "step9.label": "Do you have a photo of the swarm?",
+         "step9.hint": "Optional — helps the beekeeper assess the situation. Automatically compressed before sending.",
+         "step10.label": "Anything else you'd like to add?",
+         "step10.hint": "Approximate size, observed behaviour, site access...",
+         "btn.continue": "Continue",
+         "btn.skip": "Skip this step",
+         "depuis.opt1": "Today",
+         "depuis.opt2": "Since yesterday",
+         "depuis.opt3": "For more than 2 days",
+         "depuis.opt4": "I don't know",
+         "recap.privacyPrefix": "Your data is only used to organise this intervention.",
+         "privacy.linkLabel": "Privacy policy",
+         "btn.submit": "Send the report",
+         "success.title": "Report sent!",
+         "success.text": "A local beekeeper will take care of your intervention request.",
+         "about.title": "About us",
+         "about.subtitle": "A family beekeeping business, established since 2006 around Cayenne, driven by three simple values.",
+         "about.card1.title": "Modernity",
+         "about.card1.text": "Family beekeeping know-how, combined with modern tools like this site, for a responsive service that's accessible online.",
+         "about.card2.title": "Quality",
+         "about.card2.text": "Every swarm is captured alive and carefully relocated, respecting animal welfare and French Guiana's environment.",
+         "about.card3.title": "Fairness",
+         "about.card3.text": "A service designed to stay fair, both for the people reporting a swarm to us and for our beekeepers.",
+         "footer.copyright": "&copy; <strong>2026</strong> S.O.S Abeilles Guyane. All rights reserved.",
+         "bot.step1": "Hello 👋 I'll ask you a few questions to organise the swarm collection. What's your name?",
+         "bot.step2": "Thanks. What's your phone number?",
+         "bot.step3": "And your email address? It will be used to send you the confirmation.",
+         "bot.step4": "Which town is the swarm in?",
+         "bot.step5": "What's the exact address, or a landmark?",
+         "bot.step6": "Exactly where is the swarm?",
+         "bot.step7": "How long has it been there?",
+         "bot.step8": "How would you rate the urgency of the situation?",
+         "bot.step9": "Do you have a photo of the swarm? It really helps the beekeeper before heading out.",
+         "bot.step10": "One last thing you'd like to add before sending?",
+         "bot.step11": "Here's a summary of your report. Check that everything is correct before sending.",
+         "progress.step": "Step {n} of 10",
+         "progress.last": "Last step — check and send",
+         "validator.nom.tooShort": "Please enter your name (2 characters minimum).",
+         "validator.nom.invalid": "Please enter a valid name.",
+         "validator.telephone.tooShort": "Please enter a valid phone number (9 digits minimum, e.g. 0694 12 34 56).",
+         "validator.telephone.tooLong": "This phone number looks too long — please check it.",
+         "validator.email.invalid": "Please enter a valid email address (e.g. name@example.com).",
+         "validator.adresse.tooShort": "Please specify the address or a landmark.",
+         "validator.emplacement.tooShort": "Please specify where the swarm is.",
+         "answer.noPhoto": "No photo",
+         "answer.nothingToAdd": "Nothing to add",
+         "skip.noPhoto": "No photo",
+         "recap.label.nom": "Name",
+         "recap.label.telephone": "Phone",
+         "recap.label.email": "Email",
+         "recap.label.commune": "Town",
+         "recap.label.adresse": "Address",
+         "recap.label.emplacement": "Location",
+         "recap.label.depuis": "Since when",
+         "recap.label.urgence": "Urgency",
+         "recap.label.photo": "Photo",
+         "recap.label.message": "Message",
+         "recap.value.noPhoto": "None",
+         "recap.value.noMessage": "None",
+         "recap.edit": "Edit",
+         "error.send": "Sending failed. Please try again or contact us another way.",
+         "meta.title": "S.O.S Abeilles Guyane — Free bee swarm collection",
+         "meta.description": "Free local service to collect and relocate bee swarms in French Guiana (CACL): Cayenne, Rémire-Montjoly, Matoury, Macouria, Montsinéry-Tonnegrande, Roura. Report online, fast response."
+       },
+       es: {
+         "cta.report": "Notificar un enjambre",
+         "nav.zone": "Zona de intervención",
+         "nav.comment": "Cómo funciona",
+         "nav.attendant": "Mientras espera",
+         "hero.title": "¿Un enjambre de abejas se instaló en su casa?🐝",
+         "hero.lead": "Recuperamos y reubicamos a las abejas en su entorno, en lugar de destruirlas.<br><br>Notifique un enjambre en unos clics, un apicultor local se encarga del resto.",
+         "hero.btnGhost": "¿Qué hacer mientras tanto?",
+         "nid.title": "Dónde le gusta instalarse a los enjambres",
+         "nid.subtitle": "Pase el cursor sobre las diferentes zonas para descubrir dónde suelen instalarse los enjambres.",
+         "nid.hotspot1.aria": "Ramas y troncos de árboles: el lugar más frecuente, a menudo una rama baja o un tronco hueco",
+         "nid.hotspot1.tip": "Ramas y troncos<br><small>el lugar más frecuente</small>",
+         "nid.hotspot2.aria": "Falsos techos y áticos: un lugar oscuro y seco en altura",
+         "nid.hotspot2.tip": "Falsos techos, áticos<br><small>oscuro y seco, en altura</small>",
+         "nid.hotspot3.aria": "Cubos y neumáticos abandonados: sobre todo secos y protegidos de la lluvia",
+         "nid.hotspot3.tip": "Cubos, neumáticos<br><small>secos, sin lluvia</small>",
+         "nid.hotspot4.aria": "Contadores de agua o de electricidad: su cavidad protegida es ideal",
+         "nid.hotspot4.tip": "Contadores de agua / luz<br><small>cavidad protegida ideal</small>",
+         "nid.hotspot5.aria": "Cajas de cartón y cajones vacíos: dejados afuera o en un cobertizo",
+         "nid.hotspot5.tip": "Cajas, cajones vacíos<br><small>cobertizo, garaje</small>",
+         "zone.title": "Zona de intervención",
+         "zone.subtitle": "El servicio cubre el territorio de la CACL (Communauté d'Agglomération du Centre Littoral).",
+         "zone.mapAria": "Mapa de la zona de intervención: Cayenne, Rémire-Montjoly, Matoury, Macouria, Montsinéry-Tonnegrande y Roura",
+         "zone.mapNote": "Mapa real de OpenStreetMap: el círculo color miel indica la zona de intervención general, de Macouria a Roura, a título indicativo — no es un límite administrativo exacto.",
+         "steps.title": "Cómo funciona",
+         "steps.subtitle": "Tres pasos, desde la notificación hasta la intervención.",
+         "steps.1.title": "Usted notifica",
+         "steps.1.text": "Complete una descripción completa del enjambre a través de nuestro chat interactivo.",
+         "steps.2.title": "Recibe una confirmación",
+         "steps.2.text": "Un correo le confirma de inmediato que su solicitud fue recibida y está siendo revisada.",
+         "steps.3.title": "El apicultor interviene",
+         "steps.3.text": "En cuanto se hace cargo de su solicitud, le contacta directamente (casi siempre por teléfono, a veces por correo) para acordar un horario de intervención.",
+         "consignes.title": "Mientras espera la intervención",
+         "consignes.subtitle": "Un enjambre asentado suele estar tranquilo. Estos son los reflejos correctos.",
+         "tab.faire": "Qué hacer",
+         "tab.eviter": "Qué evitar",
+         "tab.faq": "Preguntas frecuentes",
+         "faire.1": "<span class=\"info-key\">10 metros como mínimo</span> de distancia con el enjambre",
+         "faire.2": "Ventanas y puertas <span class=\"info-key\">deben permanecer cerradas</span>",
+         "faire.3": "Mantenga a niños y animales <span class=\"info-key\">alejados</span> de la zona del enjambre",
+         "faire.4": "Mantenga <span class=\"info-key\">alejadas</span> a las personas alérgicas",
+         "faire.5": "Avise a los vecinos si el enjambre está en una zona compartida",
+         "eviter.1": "<span class=\"info-key\">Nunca</span> use agua, insecticida ni aerosol",
+         "eviter.2": "<span class=\"info-key\">No</span> mueva ni destruya el enjambre usted mismo",
+         "eviter.3": "Sin humo ni fuego cerca",
+         "eviter.4": "Evite ruidos y vibraciones (cortacésped, taladro, música, idas y venidas de animales)",
+         "faq.1.q": "¿Quién viene a mi casa?",
+         "faq.1.a": "Un <span class=\"info-key\">apicultor local</span>, no una empresa de control de plagas. Captura el enjambre y lo reubica vivo en una colmena, para preservar a las abejas.",
+         "faq.2.q": "¿Es realmente gratuito?",
+         "faq.2.a": "<span class=\"info-key\">Sí, en la gran mayoría de los casos.</span> En ciertas situaciones particulares, se puede acordar una contribución directamente entre usted y el apicultor, a discreción de ambas partes.",
+         "faq.3.q": "¿Cómo me contacta el apicultor?",
+         "faq.3.a": "La mayoría de las veces <span class=\"info-key\">por teléfono</span>, para acordar rápidamente un horario. También puede escribirle por correo, según su disponibilidad.",
+         "faq.4.q": "¿Cuánto tiempo antes de la intervención?",
+         "faq.4.a": "<span class=\"info-key\">De 24 a 48h</span> según disponibilidad. Prioridad a las situaciones urgentes (paso de gente, niños y animales).",
+         "faq.5.q": "¿Tiempo de respuesta a mi solicitud?",
+         "faq.5.a": "Confirmación <span class=\"info-key\">inmediata</span> por correo, luego llamada del apicultor para acordar un horario.",
+         "faq.6.q": "Ya lo notificó un vecino, ¿aviso igual?",
+         "faq.6.a": "No es necesario si está <span class=\"info-key\">seguro</span> de que ya se notificó. En caso de duda, notifíquelo de todos modos.",
+         "faq.7.q": "¿Picadura o reacción alérgica?",
+         "faq.7.a": "Hinchazón, dificultad para respirar, malestar: <span class=\"info-key\">emergencia</span>, llame de inmediato al 15 o al 112.",
+         "faq.8.q": "¿Por qué evitar el ruido?",
+         "faq.8.a": "Las vibraciones estresan a las abejas y pueden provocar una <span class=\"info-key\">reacción defensiva</span> colectiva.",
+         "faq.9.q": "¿Cómo protejo a mis animales?",
+         "faq.9.a": "Métalos adentro, o manténgalos tranquilos a <span class=\"info-key\">10 metros como mínimo</span> del enjambre.",
+         "loading.aria": "Enviando su solicitud",
+         "loading.text": "Enviando su solicitud...",
+         "modal.close": "Cerrar",
+         "report.title": "Notificar un enjambre",
+         "report.subtitle": "Responda las preguntas una tras otra. ¡Es rápido!",
+         "step1.label": "¿Cómo se llama?",
+         "step2.label": "¿Cuál es su número de teléfono?",
+         "step3.label": "¿Cuál es su correo electrónico?",
+         "step3.hint": "Para recibir la confirmación de que su solicitud está siendo atendida.",
+         "step4.label": "¿En qué municipio está el enjambre?",
+         "step5.label": "Indique una dirección, o un punto de referencia",
+         "step5.placeholder": "Calle, urbanización, punto de referencia...",
+         "step6.label": "¿Exactamente dónde está el enjambre?",
+         "step6.hint": "Árbol, muro, contador eléctrico, vehículo...",
+         "step7.label": "¿Desde cuándo está ahí?",
+         "step8.legend": "¿Cómo evaluaría la urgencia de la situación?",
+         "step8.opt1": "Baja — zona poco frecuentada",
+         "step8.opt2": "Media — cerca de un paso de gente",
+         "step8.opt3": "Alta — cerca de niños, una escuela o un lugar público",
+         "step9.label": "¿Tiene una foto del enjambre?",
+         "step9.hint": "Opcional — ayuda al apicultor a evaluar la situación. Se comprime automáticamente antes de enviarla.",
+         "step10.label": "¿Alguna información adicional que quiera agregar?",
+         "step10.hint": "Tamaño aproximado, comportamiento observado, acceso al terreno...",
+         "btn.continue": "Continuar",
+         "btn.skip": "Saltar este paso",
+         "depuis.opt1": "Hoy",
+         "depuis.opt2": "Desde ayer",
+         "depuis.opt3": "Desde hace más de 2 días",
+         "depuis.opt4": "No lo sé",
+         "recap.privacyPrefix": "Sus datos solo se usan para organizar esta intervención.",
+         "privacy.linkLabel": "Política de privacidad",
+         "btn.submit": "Enviar la solicitud",
+         "success.title": "¡Solicitud enviada!",
+         "success.text": "Un apicultor local se encargará de su solicitud de intervención.",
+         "about.title": "Sobre nosotros",
+         "about.subtitle": "Una empresa familiar de apicultura, establecida desde 2006 en los alrededores de Cayenne, guiada por tres valores simples.",
+         "about.card1.title": "Modernidad",
+         "about.card1.text": "Un saber apícola familiar, combinado con herramientas actuales como este sitio, para un servicio rápido y accesible en línea.",
+         "about.card2.title": "Calidad",
+         "about.card2.text": "Cada enjambre se captura vivo y se reubica con cuidado, respetando el bienestar animal y el medio ambiente de la Guayana.",
+         "about.card3.title": "Equidad",
+         "about.card3.text": "Un servicio pensado para ser justo, tanto para las personas que nos notifican un enjambre como para nuestros apicultores.",
+         "footer.copyright": "&copy; <strong>2026</strong> S.O.S Abeilles Guyane. Todos los derechos reservados.",
+         "bot.step1": "Hola 👋 Le haré algunas preguntas para organizar la recogida del enjambre. ¿Cómo se llama?",
+         "bot.step2": "Gracias. ¿Cuál es su número de teléfono?",
+         "bot.step3": "¿Y su correo electrónico? Se usará para enviarle la confirmación.",
+         "bot.step4": "¿En qué municipio está el enjambre?",
+         "bot.step5": "¿Cuál es la dirección exacta, o un punto de referencia?",
+         "bot.step6": "¿Exactamente dónde está el enjambre?",
+         "bot.step7": "¿Desde cuándo está ahí?",
+         "bot.step8": "¿Cómo evaluaría la urgencia de la situación?",
+         "bot.step9": "¿Tiene una foto del enjambre? Ayuda mucho al apicultor antes de desplazarse.",
+         "bot.step10": "¿Algo más que quiera agregar antes de enviar?",
+         "bot.step11": "Aquí tiene el resumen de su solicitud. Verifique que todo sea correcto antes de enviarla.",
+         "progress.step": "Paso {n} de 10",
+         "progress.last": "Último paso — verifique y envíe",
+         "validator.nom.tooShort": "Indique su nombre (2 caracteres como mínimo).",
+         "validator.nom.invalid": "Indique un nombre válido.",
+         "validator.telephone.tooShort": "Indique un número de teléfono válido (9 dígitos como mínimo, ej. 0694 12 34 56).",
+         "validator.telephone.tooLong": "Este número de teléfono parece demasiado largo — verifíquelo.",
+         "validator.email.invalid": "Indique una dirección de correo válida (ej. nombre@ejemplo.com).",
+         "validator.adresse.tooShort": "Indique la dirección o un punto de referencia.",
+         "validator.emplacement.tooShort": "Indique dónde está el enjambre.",
+         "answer.noPhoto": "Sin foto",
+         "answer.nothingToAdd": "Nada que agregar",
+         "skip.noPhoto": "Sin foto",
+         "recap.label.nom": "Nombre",
+         "recap.label.telephone": "Teléfono",
+         "recap.label.email": "Correo",
+         "recap.label.commune": "Municipio",
+         "recap.label.adresse": "Dirección",
+         "recap.label.emplacement": "Ubicación",
+         "recap.label.depuis": "Desde cuándo",
+         "recap.label.urgence": "Urgencia",
+         "recap.label.photo": "Foto",
+         "recap.label.message": "Mensaje",
+         "recap.value.noPhoto": "Ninguna",
+         "recap.value.noMessage": "Ninguno",
+         "recap.edit": "Editar",
+         "error.send": "Error al enviar. Intente de nuevo o contáctenos de otra forma.",
+         "meta.title": "S.O.S Abeilles Guyane — Recogida gratuita de enjambres",
+         "meta.description": "Servicio gratuito y local de recogida y reubicación de enjambres de abejas en la Guayana Francesa (CACL): Cayenne, Rémire-Montjoly, Matoury, Macouria, Montsinéry-Tonnegrande, Roura. Notifique en línea, respuesta rápida."
+       },
+       pt: {
+         "cta.report": "Sinalizar um enxame",
+         "nav.zone": "Área de atuação",
+         "nav.comment": "Como funciona",
+         "nav.attendant": "Enquanto espera",
+         "hero.title": "Um enxame de abelhas se instalou na sua casa?🐝",
+         "hero.lead": "Nós recolhemos e realocamos as abelhas em seu ambiente natural, em vez de as destruir.<br><br>Sinalize um enxame em poucos cliques, um apicultor local assume o resto.",
+         "hero.btnGhost": "O que fazer enquanto espera?",
+         "nid.title": "Onde os enxames gostam de se instalar",
+         "nid.subtitle": "Passe o cursor sobre as diferentes áreas para descobrir onde os enxames mais costumam se instalar.",
+         "nid.hotspot1.aria": "Ramos e troncos de árvores: o local mais frequente, muitas vezes um ramo baixo ou um tronco vazio",
+         "nid.hotspot1.tip": "Ramos e troncos<br><small>o local mais frequente</small>",
+         "nid.hotspot2.aria": "Forros e sótãos: um local escuro e seco em altura",
+         "nid.hotspot2.tip": "Forros, sótãos<br><small>escuro e seco, em altura</small>",
+         "nid.hotspot3.aria": "Baldes e pneus abandonados: geralmente secos e protegidos da chuva",
+         "nid.hotspot3.tip": "Baldes, pneus velhos<br><small>secos, sem chuva</small>",
+         "nid.hotspot4.aria": "Medidores de água ou de eletricidade: sua cavidade protegida é ideal",
+         "nid.hotspot4.tip": "Medidores de água / luz<br><small>cavidade protegida ideal</small>",
+         "nid.hotspot5.aria": "Caixas de papelão e caixotes vazios: deixados fora ou em um galpão de jardim",
+         "nid.hotspot5.tip": "Caixas, caixotes vazios<br><small>galpão, garagem</small>",
+         "zone.title": "Área de atuação",
+         "zone.subtitle": "O serviço cobre o território da CACL (Communauté d'Agglomération du Centre Littoral).",
+         "zone.mapAria": "Mapa da área de atuação: Cayenne, Rémire-Montjoly, Matoury, Macouria, Montsinéry-Tonnegrande e Roura",
+         "zone.mapNote": "Mapa real do OpenStreetMap: o círculo cor de mel indica a área de atuação geral, de Macouria a Roura, apenas a título indicativo — não é um limite administrativo exato.",
+         "steps.title": "Como funciona",
+         "steps.subtitle": "Três etapas, do sinal até a intervenção.",
+         "steps.1.title": "Você sinaliza",
+         "steps.1.text": "Preencha uma descrição completa do enxame através do nosso chat interativo.",
+         "steps.2.title": "Você recebe uma confirmação",
+         "steps.2.text": "Um email confirma imediatamente que o seu sinal foi recebido e está sendo analisado.",
+         "steps.3.title": "O apicultor intervém",
+         "steps.3.text": "Assim que assume o seu pedido, ele entra em contato diretamente com você (geralmente por telefone, às vezes por email) para agendar um horário de intervenção.",
+         "consignes.title": "Enquanto espera a intervenção",
+         "consignes.subtitle": "Um enxame já instalado costuma estar calmo. Aqui estão as atitudes certas.",
+         "tab.faire": "Fazer",
+         "tab.eviter": "Evitar",
+         "tab.faq": "Perguntas frequentes",
+         "faire.1": "<span class=\"info-key\">10 metros no mínimo</span> de distância do enxame",
+         "faire.2": "Janelas e portas <span class=\"info-key\">devem ficar fechadas</span>",
+         "faire.3": "Mantenha crianças e animais <span class=\"info-key\">afastados</span> da área do enxame",
+         "faire.4": "Mantenha <span class=\"info-key\">afastadas</span> as pessoas alérgicas",
+         "faire.5": "Avise os vizinhos se o enxame estiver em uma área compartilhada",
+         "eviter.1": "<span class=\"info-key\">Nunca</span> use água, insecticida ou aerossol",
+         "eviter.2": "<span class=\"info-key\">Não</span> mova ou destrua o enxame você mesmo",
+         "eviter.3": "Sem fumaça nem fogo próximo",
+         "eviter.4": "Evite ruídos e vibrações (cortador de grama, furadeira, música, idas e vindas de animais)",
+         "faq.1.q": "Quem vem até a minha casa?",
+         "faq.1.a": "Um <span class=\"info-key\">apicultor local</span>, não uma empresa de controle de pragas. Ele captura o enxame e o realoca vivo em uma colmeia, para preservar as abelhas.",
+         "faq.2.q": "É realmente gratuito?",
+         "faq.2.a": "<span class=\"info-key\">Sim, na grande maioria dos casos.</span> Em certas situações particulares, uma contribuição pode ser acordada diretamente entre você e o apicultor, a critério de ambas as partes.",
+         "faq.3.q": "Como o apicultor entra em contato comigo?",
+         "faq.3.a": "Na maioria das vezes <span class=\"info-key\">por telefone</span>, para combinar rapidamente um horário. Ele também pode escrever por email, conforme a disponibilidade dele.",
+         "faq.4.q": "Qual o prazo antes da intervenção?",
+         "faq.4.a": "<span class=\"info-key\">24 a 48h</span> conforme a disponibilidade. Prioridade para situações urgentes (movimento de pessoas, crianças e animais).",
+         "faq.5.q": "Qual o prazo de resposta ao meu sinal?",
+         "faq.5.a": "Confirmação <span class=\"info-key\">imediata</span> por email, depois uma ligação do apicultor para combinar um horário.",
+         "faq.6.q": "Um vizinho já sinalizou, eu sinalizo mesmo assim?",
+         "faq.6.a": "Não é necessário se você tem <span class=\"info-key\">certeza</span> de que já foi sinalizado. Em caso de dúvida, sinalize mesmo assim.",
+         "faq.7.q": "Picada ou reação alérgica?",
+         "faq.7.a": "Inchaço, dificuldade para respirar, mal-estar: <span class=\"info-key\">emergência</span>, ligue imediatamente para o 15 ou o 112.",
+         "faq.8.q": "Por que evitar o ruído?",
+         "faq.8.a": "As vibrações estressam as abelhas e podem desencadear uma <span class=\"info-key\">reação defensiva</span> coletiva.",
+         "faq.9.q": "Como proteger meus animais?",
+         "faq.9.a": "Coloque-os para dentro, ou mantenha-os calmos a <span class=\"info-key\">10 metros no mínimo</span> do enxame.",
+         "loading.aria": "Enviando o seu sinal",
+         "loading.text": "Enviando o seu sinal...",
+         "modal.close": "Fechar",
+         "report.title": "Sinalizar um enxame",
+         "report.subtitle": "Responda as perguntas uma após a outra. É rápido!",
+         "step1.label": "Qual é o seu nome?",
+         "step2.label": "Qual é o seu número de telefone?",
+         "step3.label": "Qual é o seu email?",
+         "step3.hint": "Para receber a confirmação de que seu pedido está sendo tratado.",
+         "step4.label": "Em qual município está o enxame?",
+         "step5.label": "Indique um endereço, ou um ponto de referência",
+         "step5.placeholder": "Rua, loteamento, ponto de referência...",
+         "step6.label": "Exatamente onde está o enxame?",
+         "step6.hint": "Árvore, parede, medidor elétrico, veículo...",
+         "step7.label": "Desde quando ele está aí?",
+         "step8.legend": "Como você avaliaria a urgência da situação?",
+         "step8.opt1": "Baixa — área pouco frequentada",
+         "step8.opt2": "Média — próximo de uma passagem",
+         "step8.opt3": "Alta — próximo de crianças, escola ou local público",
+         "step9.label": "Você tem uma foto do enxame?",
+         "step9.hint": "Opcional — ajuda o apicultor a avaliar a situação. Comprimida automaticamente antes do envio.",
+         "step10.label": "Alguma informação adicional a acrescentar?",
+         "step10.hint": "Tamanho aproximado, comportamento observado, acesso ao local...",
+         "btn.continue": "Continuar",
+         "btn.skip": "Pular esta etapa",
+         "depuis.opt1": "Hoje",
+         "depuis.opt2": "Desde ontem",
+         "depuis.opt3": "Há mais de 2 dias",
+         "depuis.opt4": "Não sei",
+         "recap.privacyPrefix": "Seus dados são usados apenas para organizar esta intervenção.",
+         "privacy.linkLabel": "Política de privacidade",
+         "btn.submit": "Enviar o sinal",
+         "success.title": "Sinal enviado!",
+         "success.text": "Um apicultor local vai assumir o seu pedido de intervenção.",
+         "about.title": "Sobre nós",
+         "about.subtitle": "Uma empresa familiar de apicultura, estabelecida desde 2006 nos arredores de Cayenne, guiada por três valores simples.",
+         "about.card1.title": "Modernidade",
+         "about.card1.text": "Um saber-fazer apícola familiar, combinado com ferramentas atuais como este site, para um serviço rápido e acessível on-line.",
+         "about.card2.title": "Qualidade",
+         "about.card2.text": "Cada enxame é capturado vivo e realocado com cuidado, respeitando o bem-estar animal e o meio ambiente da Guiana Francesa.",
+         "about.card3.title": "Equidade",
+         "about.card3.text": "Um serviço pensado para ser justo, tanto para as pessoas que nos sinalizam um enxame quanto para os nossos apicultores.",
+         "footer.copyright": "&copy; <strong>2026</strong> S.O.S Abeilles Guyane. Todos os direitos reservados.",
+         "bot.step1": "Olá 👋 Vou fazer algumas perguntas para organizar a coleta do enxame. Qual é o seu nome?",
+         "bot.step2": "Obrigado. Qual é o seu número de telefone?",
+         "bot.step3": "E o seu email? Ele será usado para enviar a confirmação.",
+         "bot.step4": "Em qual município está o enxame?",
+         "bot.step5": "Qual é o endereço exato, ou um ponto de referência?",
+         "bot.step6": "Exatamente onde está o enxame?",
+         "bot.step7": "Desde quando ele está aí?",
+         "bot.step8": "Como você avaliaria a urgência da situação?",
+         "bot.step9": "Você tem uma foto do enxame? Isso ajuda bastante o apicultor antes de se deslocar.",
+         "bot.step10": "Mais alguma coisa que queira acrescentar antes de enviar?",
+         "bot.step11": "Aqui está o resumo do seu sinal. Verifique se tudo está correto antes de enviar.",
+         "progress.step": "Etapa {n} de 10",
+         "progress.last": "Última etapa — confira e envie",
+         "validator.nom.tooShort": "Indique o seu nome (2 caracteres no mínimo).",
+         "validator.nom.invalid": "Indique um nome válido.",
+         "validator.telephone.tooShort": "Indique um número de telefone válido (9 dígitos no mínimo, ex. 0694 12 34 56).",
+         "validator.telephone.tooLong": "Este número de telefone parece longo demais — verifique.",
+         "validator.email.invalid": "Indique um endereço de email válido (ex. nome@exemplo.com).",
+         "validator.adresse.tooShort": "Indique o endereço ou um ponto de referência.",
+         "validator.emplacement.tooShort": "Indique onde está o enxame.",
+         "answer.noPhoto": "Sem foto",
+         "answer.nothingToAdd": "Nada a acrescentar",
+         "skip.noPhoto": "Sem foto",
+         "recap.label.nom": "Nome",
+         "recap.label.telephone": "Telefone",
+         "recap.label.email": "Email",
+         "recap.label.commune": "Município",
+         "recap.label.adresse": "Endereço",
+         "recap.label.emplacement": "Localização",
+         "recap.label.depuis": "Desde quando",
+         "recap.label.urgence": "Urgência",
+         "recap.label.photo": "Foto",
+         "recap.label.message": "Mensagem",
+         "recap.value.noPhoto": "Nenhuma",
+         "recap.value.noMessage": "Nenhuma",
+         "recap.edit": "Editar",
+         "error.send": "Falha no envio. Tente novamente ou contate-nos de outra forma.",
+         "meta.title": "S.O.S Abeilles Guyane — Coleta gratuita de enxames",
+         "meta.description": "Serviço gratuito e local de coleta e realocação de enxames de abelhas na Guiana Francesa (CACL): Cayenne, Rémire-Montjoly, Matoury, Macouria, Montsinéry-Tonnegrande, Roura. Sinalize on-line, resposta rápida."
+       }
+     };
+
+     let currentLang = "fr";
+     function t(key){
+       const dict = I18N[currentLang] || I18N.fr;
+       return (dict && dict[key] !== undefined) ? dict[key] : (I18N.fr[key] !== undefined ? I18N.fr[key] : key);
+     }
+
+     function applyTranslations(lang){
+       currentLang = I18N[lang] ? lang : "fr";
+       document.documentElement.lang = currentLang;
+
+       document.querySelectorAll("[data-i18n]").forEach((el) => {
+         el.textContent = t(el.dataset.i18n);
+       });
+       document.querySelectorAll("[data-i18n-html]").forEach((el) => {
+         el.innerHTML = t(el.dataset.i18nHtml);
+       });
+       document.querySelectorAll("[data-i18n-aria-label]").forEach((el) => {
+         el.setAttribute("aria-label", t(el.dataset.i18nAriaLabel));
+       });
+       document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+         el.setAttribute("placeholder", t(el.dataset.i18nPlaceholder));
+       });
+
+       document.title = t("meta.title");
+       const metaDesc = document.querySelector('meta[name="description"]');
+       if(metaDesc){ metaDesc.setAttribute("content", t("meta.description")); }
+       const ogTitle = document.querySelector('meta[property="og:title"]');
+       if(ogTitle){ ogTitle.setAttribute("content", t("meta.title")); }
+       const ogDesc = document.querySelector('meta[property="og:description"]');
+       if(ogDesc){ ogDesc.setAttribute("content", t("meta.description")); }
+
+       // La progression du chatbot ("Étape X sur 10") est du texte généré en
+       // JS, pas statique dans le HTML : on la remet à jour ici si la boîte
+       // de signalement est déjà ouverte au moment du changement de langue.
+       if(typeof window.__updateProgressLabel === "function"){ window.__updateProgressLabel(); }
+
+       try{ localStorage.setItem("sosAbeillesLang", currentLang); }catch(e){}
+     }
+
+     function getInitialLang(){
+       try{
+         const saved = localStorage.getItem("sosAbeillesLang");
+         if(saved && I18N[saved]) return saved;
+       }catch(e){}
+       return "fr";
+     }
+
      /* ---------- Onglets "En attendant l'intervention" ---------- */
      (function initInfoTabs(){
        const nav = document.querySelector(".info-tab-nav");
@@ -818,21 +1475,16 @@
         const chatLog = document.getElementById("chat-log");
         const steps = Array.from(document.querySelectorAll(".chat-step"));
       
-        /* ---------- Machine à états du chatbot ---------- */
-        const stepBotText = {
-          1: "Bonjour 👋 Je vais vous poser quelques questions pour organiser la collecte de l'essaim. Comment vous appelez-vous ?",
-          2: "Merci. Quel est votre numéro de téléphone ?",
-          3: "Et votre adresse email ? Elle servira à vous envoyer la confirmation de prise en charge.",
-          4: "Dans quelle commune se trouve l'essaim ?",
-          5: "Quelle est l'adresse précise, ou un point de repère ?",
-          6: "Où se trouve l'essaim exactement ?",
-          7: "Depuis quand est-il là ?",
-          8: "Comment évalueriez-vous l'urgence de la situation ?",
-          9: "Avez-vous une photo de l'essaim ? Ça aide beaucoup l'apiculteur avant de se déplacer.",
-          10: "Une dernière information à ajouter avant l'envoi ?",
-          11: "Voici le récapitulatif de votre signalement. Vérifiez que tout est correct avant l'envoi."
-        };
-      
+        /* ---------- Machine à états du chatbot ----------
+           Les textes du bot sont recalculés à chaque appel (via t()) plutôt
+           que figés dans un objet, pour toujours refléter la langue en
+           cours au moment où chaque étape s'affiche. */
+        function getStepBotText(stepNum){
+          const keys = {1:"bot.step1",2:"bot.step2",3:"bot.step3",4:"bot.step4",5:"bot.step5",
+            6:"bot.step6",7:"bot.step7",8:"bot.step8",9:"bot.step9",10:"bot.step10",11:"bot.step11"};
+          return keys[stepNum] ? t(keys[stepNum]) : null;
+        }
+
         let currentStep = 0;
         let editReturnStep = null;
       
@@ -852,18 +1504,25 @@
           chatLog.scrollTop = chatLog.scrollHeight;
         }
       
+        let lastProgressStep = 0;
         function updateProgress(n){
+          lastProgressStep = n;
           const bar = document.getElementById("chat-progress-bar");
           const label = document.getElementById("chat-progress-label");
           if(!bar || !label) return;
           if(n <= 10){
             bar.style.width = (n / 10 * 100) + "%";
-            label.textContent = "Étape " + n + " sur 10";
+            label.textContent = t("progress.step").replace("{n}", n);
           } else {
             bar.style.width = "100%";
-            label.textContent = "Dernière étape — vérifiez et envoyez";
+            label.textContent = t("progress.last");
           }
         }
+        // Exposé pour que applyTranslations() puisse rafraîchir ce libellé
+        // généré en JS si la langue change alors que la boîte est déjà ouverte.
+        window.__updateProgressLabel = function(){
+          if(lastProgressStep){ updateProgress(lastProgressStep); }
+        };
       
         function goToStep(n){
           steps.forEach((s) => { s.hidden = Number(s.dataset.step) !== n; });
@@ -883,7 +1542,8 @@
           chatLog.scrollTop = chatLog.scrollHeight;
           setTimeout(() => {
             typing.remove();
-            if(stepBotText[stepNum]){ addMessage(stepBotText[stepNum], "bot"); }
+            const text = getStepBotText(stepNum);
+            if(text){ addMessage(text, "bot"); }
             goToStep(stepNum);
           }, 450);
         }
@@ -902,26 +1562,26 @@
         // accepte des adresses sans domaine valide comme "nnm2@dd").
         const FIELD_VALIDATORS = {
           nom: (v) => {
-            if(v.trim().length < 2) return "Merci d'indiquer votre nom (2 caractères minimum).";
-            if(!/[A-Za-zÀ-ÖØ-öø-ÿ]/.test(v)) return "Merci d'indiquer un nom valide.";
+            if(v.trim().length < 2) return t("validator.nom.tooShort");
+            if(!/[A-Za-zÀ-ÖØ-öø-ÿ]/.test(v)) return t("validator.nom.invalid");
             return "";
           },
           telephone: (v) => {
             const digits = v.replace(/\D/g, "");
-            if(digits.length < 9) return "Merci d'indiquer un numéro de téléphone valide (9 chiffres minimum, ex. 0694 12 34 56).";
-            if(digits.length > 15) return "Ce numéro de téléphone semble trop long — vérifiez la saisie.";
+            if(digits.length < 9) return t("validator.telephone.tooShort");
+            if(digits.length > 15) return t("validator.telephone.tooLong");
             return "";
           },
           email: (v) => {
-            if(!/^[^\s@]+@[^\s@]+\.[A-Za-z]{2,}$/.test(v.trim())) return "Merci d'indiquer une adresse email valide (ex. nom@exemple.com).";
+            if(!/^[^\s@]+@[^\s@]+\.[A-Za-z]{2,}$/.test(v.trim())) return t("validator.email.invalid");
             return "";
           },
           adresse: (v) => {
-            if(v.trim().length < 3) return "Merci de préciser l'adresse ou un point de repère.";
+            if(v.trim().length < 3) return t("validator.adresse.tooShort");
             return "";
           },
           emplacement: (v) => {
-            if(v.trim().length < 3) return "Merci de préciser où se trouve l'essaim.";
+            if(v.trim().length < 3) return t("validator.emplacement.tooShort");
             return "";
           }
         };
@@ -945,58 +1605,69 @@
             }
             let answer;
             if(!input){ answer = "—"; }
-            else if(input.type === "file"){ answer = input.files[0] ? input.files[0].name : "Aucune photo"; }
-            else { answer = input.value.trim() || "Rien à ajouter"; }
+            else if(input.type === "file"){ answer = input.files[0] ? input.files[0].name : t("answer.noPhoto"); }
+            else { answer = input.value.trim() || t("answer.nothingToAdd"); }
             advance(answer);
           });
         });
-      
-        // Étapes à choix rapide (commune, depuis)
+
+        // Étapes à choix rapide (commune, depuis). Le libellé affiché (bouton,
+        // fil de discussion) suit la langue en cours ; la VALEUR réellement
+        // enregistrée dans le champ (et donc envoyée à l'apiculteur) reste,
+        // elle, toujours en français — voir data-value sur les boutons
+        // "depuis" (les communes n'ont pas besoin de data-value, ce sont des
+        // noms propres identiques dans toutes les langues).
+        let selectedLabels = {};
         document.querySelectorAll(".choice-row[data-target]").forEach((row) => {
           const targetName = row.dataset.target;
           row.querySelectorAll(".choice-btn").forEach((btn) => {
             btn.addEventListener("click", () => {
-              document.getElementById(targetName).value = btn.textContent.trim();
-              advance(btn.textContent.trim());
+              const displayText = btn.textContent.trim();
+              const canonicalValue = btn.dataset.value || displayText;
+              document.getElementById(targetName).value = canonicalValue;
+              selectedLabels[targetName] = displayText;
+              advance(displayText);
             });
           });
         });
-      
-        // Étape urgence (boutons liés à des radios)
+
+        // Étape urgence (boutons liés à des radios) — même principe de
+        // découplage affichage traduit / valeur canonique française.
         document.querySelectorAll(".choice-btn[data-radio]").forEach((btn) => {
           btn.addEventListener("click", () => {
             document.getElementById(btn.dataset.radio).checked = true;
+            selectedLabels.urgence = btn.textContent.trim();
             advance(btn.textContent.trim());
           });
         });
-      
+
         // Étapes facultatives avec "Passer cette étape"
         document.querySelectorAll(".btn-skip").forEach((btn) => {
           btn.addEventListener("click", () => {
             const field = btn.dataset.skip;
-            if(field === "photo"){ photoInput.value = ""; advance("Pas de photo"); }
-            else { document.getElementById(field).value = ""; advance("Rien à ajouter"); }
+            if(field === "photo"){ photoInput.value = ""; advance(t("skip.noPhoto")); }
+            else { document.getElementById(field).value = ""; advance(t("answer.nothingToAdd")); }
           });
         });
-      
+
         function buildRecap(){
           const recap = document.getElementById("recap-card");
           const raw = Object.fromEntries(new FormData(form).entries());
           const rows = [
-            ["Nom", raw.nom, 1],
-            ["Téléphone", raw.telephone, 2],
-            ["Email", raw.email, 3],
-            ["Commune", raw.commune, 4],
-            ["Adresse", raw.adresse, 5],
-            ["Emplacement", raw.emplacement, 6],
-            ["Depuis quand", raw.depuis, 7],
-            ["Urgence", raw.urgence, 8],
-            ["Photo", photoInput.files[0] ? photoInput.files[0].name : "Aucune", 9],
-            ["Message", raw.message || "Aucun", 10]
+            [t("recap.label.nom"), raw.nom, 1],
+            [t("recap.label.telephone"), raw.telephone, 2],
+            [t("recap.label.email"), raw.email, 3],
+            [t("recap.label.commune"), raw.commune, 4],
+            [t("recap.label.adresse"), raw.adresse, 5],
+            [t("recap.label.emplacement"), raw.emplacement, 6],
+            [t("recap.label.depuis"), selectedLabels.depuis || raw.depuis, 7],
+            [t("recap.label.urgence"), selectedLabels.urgence || raw.urgence, 8],
+            [t("recap.label.photo"), photoInput.files[0] ? photoInput.files[0].name : t("recap.value.noPhoto"), 9],
+            [t("recap.label.message"), raw.message || t("recap.value.noMessage"), 10]
           ];
           recap.innerHTML = rows.map(([label, value, step]) =>
             '<div class="recap-row"><span class="rlabel">' + label + '</span><span class="rvalue">'
-            + (value || "—") + ' <button type="button" class="redit" data-jump="' + step + '">Modifier</button></span></div>'
+            + (value || "—") + ' <button type="button" class="redit" data-jump="' + step + '">' + t("recap.edit") + '</button></span></div>'
           ).join("");
       
           recap.querySelectorAll(".redit").forEach((b) => {
@@ -1213,17 +1884,29 @@
            opt.classList.add("active");
            trigger.querySelector(".lang-current").textContent = opt.dataset.lang.toUpperCase();
            closeMenu();
-           // La traduction réelle du contenu de la page sera branchée ici
-           // une fois le système multilingue mis en place.
+           applyTranslations(opt.dataset.lang);
          });
        });
-   
+
        document.addEventListener("click", (e) => {
          if(!menu.hidden && !e.target.closest(".lang-switch")){ closeMenu(); }
        });
        document.addEventListener("keydown", (e) => {
          if(e.key === "Escape" && !menu.hidden){ closeMenu(); trigger.focus(); }
        });
+
+       // Applique au chargement la langue mémorisée d'une visite précédente
+       // (sinon le français reste la langue par défaut).
+       const initialLang = getInitialLang();
+       if(initialLang !== "fr"){
+         const initialOpt = menu.querySelector('.lang-option[data-lang="' + initialLang + '"]');
+         if(initialOpt){
+           menu.querySelectorAll(".lang-option").forEach((o) => { o.classList.remove("active"); });
+           initialOpt.classList.add("active");
+           trigger.querySelector(".lang-current").textContent = initialLang.toUpperCase();
+         }
+       }
+       applyTranslations(initialLang);
      })();
    
      form.addEventListener("submit", async function(e){
@@ -1361,7 +2044,7 @@
          document.getElementById("loading-overlay").hidden = true;
          reportModal.hidden = false;
          reportModal.classList.remove("is-transition-state");
-         statusEl.textContent = "Erreur d'envoi. Réessayez ou contactez-nous autrement.";
+         statusEl.textContent = t("error.send");
          statusEl.className = "form-status err";
          submitBtn.disabled = false;
        }
