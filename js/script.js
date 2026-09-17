@@ -5,7 +5,7 @@
      - un service email relié à la boîte mail de l'apiculteur (voir le guide de configuration)
      - 2 templates : notification (à l'apiculteur), confirmation (au client)
      ========================================================= */
-     const EMAILJS_PUBLIC_KEY   = "VOTRE_PUBLIC_KEY";
+     const EMAILJS_PUBLIC_KEY   = "p82valRt_i5V00YJK";
      const EMAILJS_SERVICE_ID   = "service_hwx119g";
      const TEMPLATE_NOTIFY      = "template_vmgefba";   // "Notification apiculteur", envoyé à l'apiculteur (+ copie dev)
      const TEMPLATE_CONFIRM     = "template_b3x7ci3";   // "Confirmation client", envoyé au client, immédiat
