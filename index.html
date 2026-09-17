@@ -8,7 +8,8 @@
 <meta name="robots" content="index, follow">
 <!-- Empêche la traduction automatique du navigateur (Chrome, Edge...) : le site
      a déjà son propre système de langues (FR/EN/ES/PT/ZH, sélecteur en en-tête),
-     fiable -->
+     fiable et relu — la traduction automatique du navigateur ferait doublon et
+     se déclenche mal quand notre JS change dynamiquement l'attribut lang. -->
 <meta name="google" content="notranslate">
 <meta name="theme-color" content="#16281C">
 <meta property="og:title" content="S.O.S Abeilles Guyane — Collecte gratuite d'essaims">
@@ -164,7 +165,7 @@
   <div class="wrap">
     <div class="section-head">
       <h2 data-i18n="nid.title">Où les essaims aiment s'installer</h2>
-      <p data-i18n="nid.subtitle">Survolez les différentes zones pour découvrir les emplacements de la maison où les essaims s'installent le plus souvent.</p>
+      <p data-i18n="nid.subtitle">Survolez les différentes zones pour découvrir les emplacements où les essaims s'installent le plus souvent.</p>
     </div>
     <div class="nest-scene">
       <svg class="nest-illustration" viewBox="0 0 800 420" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -202,19 +203,19 @@
       </button>
       <button type="button" class="nest-hotspot" style="left:62.5%; top:25%;" data-i18n-aria-label="nid.hotspot2.aria" aria-label="Faux plafonds et combles : un endroit sombre et sec en hauteur">
         <span class="hotspot-dot"></span>
-        <span class="hotspot-tip" data-i18n-html="nid.hotspot2.tip">Faux plafonds et combles<br><small>sombre et sec en hauteur</small></span>
+        <span class="hotspot-tip" data-i18n-html="nid.hotspot2.tip">Faux plafonds, combles<br><small>sombre et sec en hauteur</small></span>
       </button>
       <button type="button" class="nest-hotspot" style="left:36.25%; top:76%;" data-i18n-aria-label="nid.hotspot3.aria" aria-label="Seaux et pneus abandonnés : surtout secs et à l'abri de la pluie">
         <span class="hotspot-dot"></span>
-        <span class="hotspot-tip" data-i18n-html="nid.hotspot3.tip">Seaux et pneus abandonnés<br><small>secs et à l'abri de la pluie</small></span>
+        <span class="hotspot-tip" data-i18n-html="nid.hotspot3.tip">Seaux, pneus abandonnés<br><small>secs et à l'abri de la pluie</small></span>
       </button>
-      <button type="button" class="nest-hotspot" style="left:50.5%; top:73%;" data-i18n-aria-label="nid.hotspot4.aria" aria-label="Compteurs d'eau ou d'électricité : leur cavité protégée est idéale">
+      <button type="button" class="nest-hotspot" style="left:50.5%; top:73%;" data-i18n-aria-label="nid.hotspot4.aria" aria-label="Compteurs d'eau ou électriques : leur cavité protégée est idéale">
         <span class="hotspot-dot"></span>
-        <span class="hotspot-tip" data-i18n-html="nid.hotspot4.tip">Compteurs d'eau ou d'électricité<br><small>cavité protégée idéale</small></span>
+        <span class="hotspot-tip" data-i18n-html="nid.hotspot4.tip">Compteurs d'eau / électriques<br><small>cavité protégée idéale</small></span>
       </button>
       <button type="button" class="nest-hotspot" style="left:83.75%; top:76.2%;" data-i18n-aria-label="nid.hotspot5.aria" aria-label="Cartons et caisses vides : laissés dehors ou dans un abri de jardin">
         <span class="hotspot-dot"></span>
-        <span class="hotspot-tip" data-i18n-html="nid.hotspot5.tip">Cartons et caisses vides<br><small>abri de jardin et garage</small></span>
+        <span class="hotspot-tip" data-i18n-html="nid.hotspot5.tip">Cartons, caisses vides<br><small>abri de jardin, garage</small></span>
       </button>
     </div>
   </div>
@@ -227,7 +228,7 @@
       <p data-i18n="zone.subtitle">Le service couvre le territoire de la CACL (Communauté d'Agglomération du Centre Littoral).</p>
     </div>
     <div id="zone-leaflet-map" class="zone-leaflet-map" role="img" data-i18n-aria-label="zone.mapAria" aria-label="Carte géographique de la zone d'intervention : Cayenne, Rémire-Montjoly, Matoury, Macouria, Montsinéry-Tonnegrande et Roura"></div>
-    <p class="map-note visually-hidden" data-i18n="zone.mapNote">Carte OpenStreetMap réelle : le cercle miel indique la zone d'intervention globale, de Macouria à Roura, à titre indicatif.</p>
+    <p class="map-note visually-hidden" data-i18n="zone.mapNote">Carte OpenStreetMap réelle : le cercle miel indique la zone d'intervention globale, de Macouria à Roura, à titre indicatif — pas une limite administrative exacte.</p>
   </div>
 </section>
 
@@ -516,6 +517,8 @@
     </div>
 </div>
 
+<!-- Boîte de dialogue flottante "À propos de nous" — même principe que la boîte
+     "Signaler un essaim" ci-dessus, ouverte uniquement au clic sur "À propos" dans le pied de page. -->
 <div class="modal-backdrop" id="about-backdrop" hidden></div>
 <div class="report-modal about-modal" id="about-modal" hidden role="dialog" aria-modal="true" aria-labelledby="about-modal-title">
   <button type="button" class="modal-close" id="about-modal-close" data-i18n-aria-label="modal.close" aria-label="Fermer">&times;</button>
@@ -542,18 +545,20 @@
   </div>
 </div>
 
+<!-- Boîte de dialogue flottante "Politique de confidentialité" — même principe que les deux
+     boîtes ci-dessus, ouverte au clic sur "Politique de confidentialité" (pied de page ou formulaire). -->
 <div class="modal-backdrop" id="privacy-backdrop" hidden></div>
 <div class="report-modal privacy-modal" id="privacy-modal" hidden role="dialog" aria-modal="true" aria-labelledby="privacy-modal-title">
   <button type="button" class="modal-close" id="privacy-modal-close" aria-label="Fermer">&times;</button>
   <div class="section-head">
     <h2 id="privacy-modal-title">Politique de confidentialité</h2>
-    <p>Comprenez comment nous traitons vos données lorsque vous signalez un essaim.</p>
+    <p>Comment nous traitons vos données lorsque vous signalez un essaim — en clair, sans jargon inutile.</p>
   </div>
   <div class="legal-content">
     <p class="legal-updated">Dernière mise à jour : septembre 2026</p>
 
     <h3>Qui traite vos données ?</h3>
-    <p>Le responsable du traitement est l'apiculteur qui exploite le service S.O.S Abeilles Guyane. Le développeur du site intervient uniquement comme <span class="info-key">sous-traitant technique</span>, pour la maintenance, il n'utilise vos données à aucune autre fin.</p>
+    <p>Le responsable du traitement est l'apiculteur qui exploite le service S.O.S Abeilles Guyane. Le développeur du site intervient uniquement comme <span class="info-key">sous-traitant technique</span>, pour la maintenance — il n'utilise vos données à aucune autre fin.</p>
 
     <h3>Quelles données sont collectées ?</h3>
     <p>Lorsque vous signalez un essaim, nous collectons :</p>
@@ -567,16 +572,16 @@
     </ul>
 
     <h3>Pourquoi ?</h3>
-    <p>Uniquement pour organiser la collecte : vous identifier, vous localiser, évaluer l'urgence et permettre à l'apiculteur de vous contacter pour convenir d'un horaire.</p>
+    <p>Uniquement pour organiser la collecte : vous identifier, vous localiser, évaluer l'urgence, et permettre à l'apiculteur de vous contacter pour convenir d'un horaire.</p>
 
     <h3>Qui y a accès ?</h3>
     <p>Seuls l'apiculteur et le développeur du site (maintenance technique) accèdent à votre signalement. Vos données ne sont ni vendues, ni partagées à des fins commerciales. Deux prestataires les traitent en notre nom, uniquement pour l'acheminer : <span class="info-key">Netlify</span> (hébergement) et <span class="info-key">EmailJS</span> (envoi des emails), tous deux engagés contractuellement à un niveau de protection conforme au RGPD.</p>
 
     <h3>Combien de temps sont-elles conservées ?</h3>
-    <p>Elles sont conservées 12 mois après intervention,sauf obligation légal contraire.</p>
+    <p>12 mois après l'intervention, puis suppression, sauf obligation légale contraire.</p>
 
     <h3>Vos droits</h3>
-    <p>Vous disposez d'un droit d'accès, de rectification, d'effacement, de limitation, d'opposition et de portabilité sur vos données. Pour l'exercer, utilisez le formulaire <span class="info-key">« Signaler un essaim »</span> du site et indiquez votre demande dans le champ message, nous vous répondrons sous 30 jours. Vous pouvez aussi introduire une réclamation auprès de la <a href="https://www.cnil.fr" target="_blank" rel="noopener">CNIL</a>.</p>
+    <p>Vous disposez d'un droit d'accès, de rectification, d'effacement, de limitation, d'opposition et de portabilité sur vos données. Pour l'exercer, utilisez le formulaire <span class="info-key">« Signaler un essaim »</span> du site et indiquez votre demande dans le champ message — nous vous répondrons sous 30 jours. Vous pouvez aussi introduire une réclamation auprès de la <a href="https://www.cnil.fr" target="_blank" rel="noopener">CNIL</a>.</p>
 
     <h3>Cookies et traceurs</h3>
     <p>Ce site n'utilise aucun cookie publicitaire. Certains services tiers intégrés (police d'écriture Google Fonts, fond de carte MapTiler) peuvent déposer des cookies techniques nécessaires à leur fonctionnement. Nous pourrons également utiliser, à l'avenir, des cookies de mesure d'audience (statistiques de visite, cartes de chaleur des clics et déplacements de souris) afin d'améliorer le site ; le cas échéant, ils ne seront déposés qu'après avoir recueilli votre consentement.</p>
