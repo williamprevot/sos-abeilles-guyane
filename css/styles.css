@@ -399,7 +399,7 @@ header nav a:hover{ color: var(--honey); }
   border: 1px solid rgba(246,238,218,0.28);
   color: var(--parchment-2);
   padding: 9px 18px;
-  border-radius: 999px;
+  border-radius: var(--radius);
   cursor: pointer;
   font-family: 'Work Sans', sans-serif;
   font-size: 0.9rem;
@@ -411,28 +411,40 @@ header nav a:hover{ color: var(--honey); }
 .info-tab-panel[hidden]{ display:none; }
 
 .info-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:12px; }
+/* "Verre dépoli" : sur .report-modal, le flou (backdrop-filter) donne l'effet parce
+   qu'il floute le site chargé derrière. Ici, ces cartes n'ont qu'un fond uni derrière
+   elles (rien à flouter), donc le même flou seul ne se voit pas — la teinte plate
+   (comme .report-modal) reste plus fidèle au rendu voulu ; le highlight en haut et
+   l'ombre en dessous suffisent à les détacher du fond sans dégradé visible. */
 .info-list li{
-  background: var(--forest-2);
-  border: 1px solid rgba(246,238,218,0.15);
+  background: rgba(31,58,38,0.55);
+  backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
+  border: 1px solid rgba(217,160,44,0.3);
   border-radius: var(--radius);
   padding: 14px 18px;
   font-size: 0.96rem;
   color: var(--parchment-2);
+  box-shadow: inset 0 1px 0 rgba(246,238,218,0.14), 0 6px 18px rgba(0,0,0,0.22);
 }
 .info-key{ color: var(--honey); font-weight: 700; }
 
 .faq-list{ display:flex; flex-direction:column; gap:12px; }
 .faq-item{
-  background: var(--forest-2);
+  background: rgba(31,58,38,0.55);
+  backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
   color: var(--parchment-2);
-  border: 1px solid rgba(246,238,218,0.15);
+  border: 1px solid rgba(217,160,44,0.3);
   border-radius: var(--radius);
-  padding: 18px 22px;
+  padding: 14px 18px;
+  box-shadow: inset 0 1px 0 rgba(246,238,218,0.14), 0 6px 18px rgba(0,0,0,0.22);
 }
 .faq-item summary{
   cursor: pointer;
   font-weight: 400;
   font-size: 0.96rem;
+  line-height: 1.5;
   color: var(--parchment-2);
   list-style: none;
   display: flex;
@@ -444,7 +456,8 @@ header nav a:hover{ color: var(--honey); }
 .faq-item summary::after{
   content: "+";
   font-family: 'Zilla Slab', serif;
-  font-size: 1.3rem;
+  font-size: 1.2rem;
+  line-height: 1;
   color: var(--honey);
   flex-shrink: 0;
 }
@@ -1111,7 +1124,7 @@ footer{
 
   #consignes .info-tab-nav{ margin-bottom: 26px; }
   #consignes .info-list,
-  #consignes .faq-list{ gap: 18px; }
-  #consignes .info-list li{ padding: 20px 24px; font-size: 1rem; }
-  #consignes .faq-item{ padding: 20px 24px; }
+  #consignes .faq-list{ gap: 14px; }
+  #consignes .info-list li{ padding: 15px 20px; font-size: 1rem; }
+  #consignes .faq-item{ padding: 15px 20px; }
 }
