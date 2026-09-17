@@ -679,54 +679,86 @@ fieldset legend{
 .submit-row[hidden]{ display:none; }
 .btn-submit{ min-width: 260px; }
 
-.spinner{
-  display:inline-block;
-  width:14px; height:14px;
-  border: 2px solid rgba(217,160,44,0.3);
-  border-top-color: var(--honey);
-  border-radius:50%;
-  margin-right:8px;
-  vertical-align:middle;
-  animation: spin 0.7s linear infinite;
-}
-@keyframes spin{ to{ transform: rotate(360deg); } }
-@media (prefers-reduced-motion: reduce){
-  .spinner{ animation: none; }
-}
-
-/* ---------- Écran de confirmation : remplace toute la boîte de dialogue ----------
-   Une fois le signalement envoyé, l'objectif de la page est atteint : on
-   cache tout le reste de la boîte (fil de discussion, récapitulatif,
-   barre de progression, bouton d'envoi...) pour ne laisser que ce message
-   de remerciement, comme sur une page de confirmation de commande. */
-.report-modal.is-success-state .section-head,
-.report-modal.is-success-state .chat-progress,
-.report-modal.is-success-state .chat-progress-label,
-.report-modal.is-success-state .chat-log,
-.report-modal.is-success-state .recap-card,
-.report-modal.is-success-state .privacy-note{
+/* ---------- Prise en charge : remplace toute la boîte de dialogue ----------
+   Dès le clic sur "Envoyer" (chargement), puis une fois le signalement
+   envoyé (confirmation), l'objectif de la page est atteint ou en passe de
+   l'être : on cache tout le reste de la boîte (fil de discussion,
+   récapitulatif, barre de progression, bouton d'envoi...) pour ne laisser
+   que l'écran de chargement puis le message de remerciement, comme sur une
+   page de confirmation de commande. */
+.report-modal.is-transition-state .section-head,
+.report-modal.is-transition-state .chat-progress,
+.report-modal.is-transition-state .chat-progress-label,
+.report-modal.is-transition-state .chat-log,
+.report-modal.is-transition-state .recap-card,
+.report-modal.is-transition-state .privacy-note,
+.report-modal.is-transition-state .submit-row{
   display: none;
 }
-.report-modal.is-success-state form{
+.report-modal.is-transition-state form{
   background: transparent;
   border: none;
   padding: 0;
 }
 
+/* ---------- Animation de chargement : ruche d'alvéoles qui tournent ---------- */
+.loading-screen{
+  text-align:center;
+  padding: 54px 12px;
+  animation: success-in 0.4s ease both;
+}
+.loading-screen p{
+  color: var(--parchment-2);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.85rem;
+  letter-spacing: 0.03em;
+  margin: 0;
+}
+.hive-loader{
+  position: relative;
+  width: 64px; height: 64px;
+  margin: 0 auto 26px;
+  animation: hive-spin 3.6s linear infinite;
+}
+.hive-loader span{
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 18px; height: 16px;
+  margin: -8px 0 0 -9px;
+  clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+  background: var(--honey);
+  opacity: 0.22;
+  animation: hive-pulse 1.2s ease-in-out infinite;
+}
+.hive-loader span:nth-child(1){ transform: rotate(0deg)   translate(0, -24px) rotate(0deg);   animation-delay: 0s; }
+.hive-loader span:nth-child(2){ transform: rotate(60deg)  translate(0, -24px) rotate(-60deg);  animation-delay: 0.1s; }
+.hive-loader span:nth-child(3){ transform: rotate(120deg) translate(0, -24px) rotate(-120deg); animation-delay: 0.2s; }
+.hive-loader span:nth-child(4){ transform: rotate(180deg) translate(0, -24px) rotate(-180deg); animation-delay: 0.3s; }
+.hive-loader span:nth-child(5){ transform: rotate(240deg) translate(0, -24px) rotate(-240deg); animation-delay: 0.4s; }
+.hive-loader span:nth-child(6){ transform: rotate(300deg) translate(0, -24px) rotate(-300deg); animation-delay: 0.5s; }
+@keyframes hive-spin{ to{ transform: rotate(360deg); } }
+@keyframes hive-pulse{
+  0%, 100%{ opacity: 0.22; }
+  50%{ opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce){
+  .loading-screen{ animation:none; }
+  .hive-loader{ animation:none; }
+  .hive-loader span{ animation:none; opacity:0.7; }
+}
+
+/* ---------- Écran de confirmation ---------- */
 .success-screen{
   text-align:center;
   padding: 46px 12px 34px;
   animation: success-in 0.5s ease both;
 }
 .success-icon{
-  width:72px; height:72px;
-  margin: 0 auto 24px;
-  border-radius:50%;
-  background: var(--honey);
-  color: var(--forest);
-  font-size:2.2rem;
-  font-weight:700;
-  display:flex; align-items:center; justify-content:center;
+  width: auto;
+  margin: 0 auto 20px;
+  font-size: 3rem;
+  line-height: 1;
+  animation: rocket-launch 0.6s cubic-bezier(.22,.85,.32,1.2) both;
 }
 .success-screen h3{ color: var(--parchment); font-size:1.6rem; margin-bottom:12px; }
 .success-screen p{ color: var(--parchment-2); font-size:1.02rem; max-width:38ch; margin:0 auto; }
@@ -734,8 +766,14 @@ fieldset legend{
   from{ opacity:0; transform: translateY(6px); }
   to{ opacity:1; transform: translateY(0); }
 }
+@keyframes rocket-launch{
+  0%{ transform: translateY(16px) scale(0.6); opacity:0; }
+  65%{ transform: translateY(-3px) scale(1.06); opacity:1; }
+  100%{ transform: translateY(0) scale(1); opacity:1; }
+}
 @media (prefers-reduced-motion: reduce){
   .success-screen{ animation:none; }
+  .success-icon{ animation:none; }
 }
 
 .btn-submit{

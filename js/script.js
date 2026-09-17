@@ -1091,8 +1091,9 @@
    
        const successScreen = document.getElementById("success-screen");
        if(!successScreen.hidden){
-         reportModal.classList.remove("is-success-state");
+         reportModal.classList.remove("is-transition-state");
          successScreen.hidden = true;
+         document.getElementById("loading-screen").hidden = true;
          document.getElementById("submit-row").hidden = false;
          submitBtn.disabled = false;
          statusEl.textContent = "";
@@ -1253,9 +1254,13 @@
        }
    
        submitBtn.disabled = true;
-       statusEl.innerHTML = "<span class=\"spinner\"></span>Envoi en cours...";
+       statusEl.textContent = "";
        statusEl.className = "form-status";
-   
+       // Remplace tout le contenu de la boîte par l'animation de chargement
+       // pendant l'envoi, plutôt qu'un simple petit spinner à côté du bouton.
+       reportModal.classList.add("is-transition-state");
+       document.getElementById("loading-screen").hidden = false;
+
        const raw = Object.fromEntries(new FormData(form).entries());
        delete raw.photo;
        delete raw["bot-field"];
@@ -1323,6 +1328,7 @@
            emailjs.send(EMAILJS_SERVICE_ID, TEMPLATE_CONFIRM, confirmParams)
          ]);
    
+         document.getElementById("loading-screen").hidden = true;
          document.getElementById("submit-row").hidden = true;
          const successScreen = document.getElementById("success-screen");
          successScreen.hidden = false;
@@ -1330,10 +1336,15 @@
          // remplace tout le contenu de la boîte de dialogue (fil de discussion,
          // récapitulatif, barre de progression...) par le seul message de
          // remerciement, plutôt que de l'empiler avec ce qui précède.
-         reportModal.classList.add("is-success-state");
+         // (is-transition-state est déjà posée depuis le début de l'envoi,
+         // pour l'animation de chargement — elle reste active ici.)
          form.reset();
        }catch(err){
          console.error(err);
+         // En cas d'échec, on revient à l'écran normal (le récapitulatif et
+         // le bouton "Envoyer" réapparaissent) pour permettre de réessayer.
+         reportModal.classList.remove("is-transition-state");
+         document.getElementById("loading-screen").hidden = true;
          statusEl.textContent = "Erreur d'envoi. Réessayez ou contactez-nous autrement.";
          statusEl.className = "form-status err";
          submitBtn.disabled = false;
