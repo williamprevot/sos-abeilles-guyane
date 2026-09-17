@@ -159,7 +159,7 @@
   <div class="wrap">
     <div class="section-head">
       <h2>Où les essaims aiment s'installer</h2>
-      <p>Survolez les différentes zones pour découvrir les emplacements de la maison où les essaims s'installent le plus souvent.</p>
+      <p>Survolez les différentes zones pour découvrir les emplacements où les essaims s'installent le plus souvent.</p>
     </div>
     <div class="nest-scene">
       <svg class="nest-illustration" viewBox="0 0 800 420" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -220,6 +220,7 @@
     <div class="section-head">
       <h2>Zone d'intervention</h2>
       <p>Le service couvre le territoire de la CACL (Communauté d'Agglomération du Centre Littoral).</p>
+      <p>Survolez la carte pour voir si votre commune est concernée.</p>
     </div>
     <div id="zone-leaflet-map" class="zone-leaflet-map" role="img" aria-label="Carte géographique de la zone d'intervention : Cayenne, Rémire-Montjoly, Matoury, Macouria, Montsinéry-Tonnegrande et Roura"></div>
     <p class="map-note visually-hidden">Carte OpenStreetMap réelle : le cercle miel indique la zone d'intervention globale, de Macouria à Roura, à titre indicatif — pas une limite administrative exacte.</p>
@@ -494,11 +495,6 @@
 
         <div class="chat-step" data-step="11" hidden>
           <div class="recap-card" id="recap-card"></div>
-          <label class="miel-card" for="miel-alert">
-            <input type="checkbox" id="miel-alert" name="miel_alert" value="Oui">
-            <span class="miel-icon">🍯</span>
-            <span>M'avertir par email quand du miel est disponible à la vente</span>
-          </label>
           <p class="privacy-note">Vos données ne sont utilisées que pour organiser cette intervention. <button type="button" class="link-like open-privacy">Politique de confidentialité</button>.</p>
           <div class="submit-row" id="submit-row">
             <button type="submit" class="btn-submit" id="submit-btn">Envoyer le signalement</button>
@@ -568,40 +564,24 @@
       <li>L'emplacement, l'ancienneté et l'urgence que vous indiquez</li>
       <li>Une photo de l'essaim, si vous en joignez une</li>
       <li>Un message libre, si vous en ajoutez un</li>
-      <li>Votre choix concernant les alertes de disponibilité de miel</li>
     </ul>
 
     <h3>Pourquoi ?</h3>
-    <p>Uniquement pour organiser la collecte : vous identifier, vous localiser, évaluer l'urgence, et permettre à l'apiculteur de vous contacter pour convenir d'un horaire. Les alertes miel reposent sur un consentement séparé, donné librement et retirable à tout moment.</p>
+    <p>Uniquement pour organiser la collecte : vous identifier, vous localiser, évaluer l'urgence, et permettre à l'apiculteur de vous contacter pour convenir d'un horaire.</p>
 
     <h3>Qui y a accès ?</h3>
     <p>Seuls l'apiculteur et le développeur du site (maintenance technique) accèdent à votre signalement. Vos données ne sont ni vendues, ni partagées à des fins commerciales. Deux prestataires les traitent en notre nom, uniquement pour l'acheminer : <span class="info-key">Netlify</span> (hébergement) et <span class="info-key">EmailJS</span> (envoi des emails), tous deux engagés contractuellement à un niveau de protection conforme au RGPD.</p>
 
     <h3>Combien de temps sont-elles conservées ?</h3>
-    <p>12 mois après l'intervention, puis suppression, sauf obligation légale contraire. Si vous avez accepté les alertes miel, votre email est conservé jusqu'à votre désinscription.</p>
+    <p>12 mois après l'intervention, puis suppression, sauf obligation légale contraire.</p>
 
     <h3>Vos droits</h3>
-    <p>Vous disposez d'un droit d'accès, de rectification, d'effacement, de limitation, d'opposition et de portabilité sur vos données, ainsi que du droit de retirer votre consentement aux alertes miel à tout moment. Pour l'exercer, utilisez le formulaire <span class="info-key">« Signaler un essaim »</span> du site et indiquez votre demande dans le champ message — nous vous répondrons sous 30 jours. Vous pouvez aussi introduire une réclamation auprès de la <a href="https://www.cnil.fr" target="_blank" rel="noopener">CNIL</a>.</p>
+    <p>Vous disposez d'un droit d'accès, de rectification, d'effacement, de limitation, d'opposition et de portabilité sur vos données. Pour l'exercer, utilisez le formulaire <span class="info-key">« Signaler un essaim »</span> du site et indiquez votre demande dans le champ message — nous vous répondrons sous 30 jours. Vous pouvez aussi introduire une réclamation auprès de la <a href="https://www.cnil.fr" target="_blank" rel="noopener">CNIL</a>.</p>
 
     <h3>Cookies et traceurs</h3>
     <p>Ce site n'utilise aucun cookie publicitaire. Certains services tiers intégrés (police d'écriture Google Fonts, fond de carte MapTiler) peuvent déposer des cookies techniques nécessaires à leur fonctionnement. Nous pourrons également utiliser, à l'avenir, des cookies de mesure d'audience (statistiques de visite, cartes de chaleur des clics et déplacements de souris) afin d'améliorer le site ; le cas échéant, ils ne seront déposés qu'après avoir recueilli votre consentement.</p>
   </div>
 </div>
-
-<!-- Panneau visible uniquement quand l'apiculteur clique sur le lien "prise en charge" reçu par email -->
-<section class="handoff" id="handoff-section">
-  <div class="wrap">
-    <div class="handoff-box">
-      <h2>Confirmer la prise en charge</h2>
-      <p class="meta">Signalement de <b id="ho-nom">—</b>, commune de <b id="ho-commune">—</b>, à joindre au <b id="ho-telephone">—</b>.</p>
-      <p>Pensez à appeler la personne pour convenir d'un horaire. En confirmant ci-dessous, un email lui est aussi envoyé pour lui indiquer que son essaim est pris en charge.</p>
-      <div class="submit-row">
-        <button type="button" class="btn-submit" id="handoff-btn">Confirmer la prise en charge</button>
-        <span class="form-status" id="handoff-status"></span>
-      </div>
-    </div>
-  </div>
-</section>
 
 <footer>
   <div class="wrap footer-links">

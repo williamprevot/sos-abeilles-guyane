@@ -10,6 +10,12 @@
   --alert: #B23A1F;
   --line: rgba(75,50,33,0.18);
   --radius: 3px;
+  /* Hauteur réservée en haut de l'écran par la bannière promo (fixe) +
+     l'en-tête (collant) : utilisée à la fois pour l'ancrage des liens de
+     navigation (scroll-margin-top) et pour le calcul de la hauteur d'un
+     "écran" en mode défilement guidé ci-dessous, afin que les deux
+     restent toujours cohérents. */
+  --snap-offset: 112px;
 }
 
 *{ box-sizing: border-box; }
@@ -84,7 +90,7 @@ a{ color: var(--honey); }
   cursor: pointer;
 }
 .wrap{ max-width: 1040px; margin: 0 auto; padding: 0 28px; }
-section{ padding: 72px 0; scroll-margin-top: 112px; }
+section{ padding: 72px 0; scroll-margin-top: var(--snap-offset); }
 #consignes{ padding-bottom: 36px; }
 
 /* ---------- Header ---------- */
@@ -328,19 +334,26 @@ header nav a:hover{ color: var(--honey); }
 .section-head{ max-width: 620px; margin-bottom: 44px; }
 .section-head h2{ font-size: clamp(1.6rem, 3vw, 2.1rem); color: var(--honey); }
 
-/* ---------- À propos (contenu de la boîte de dialogue flottante) ---------- */
+/* ---------- À propos (contenu de la boîte de dialogue flottante) ----------
+   Contenu volontairement compact : à l'inverse de la politique de
+   confidentialité (texte juridique long, qui doit défiler dans la boîte
+   sur beaucoup d'écrans, ce qui est normal), cette boîte n'a que 3 courtes
+   cartes — l'objectif est qu'elle tienne toujours sans avoir besoin de
+   défiler, même sur un écran de portable courant (ex. 1366×768). */
+.about-modal{ padding: 30px 36px 26px; }
+.about-modal .section-head{ margin-bottom: 18px; }
 .about-grid{
   display:grid;
   grid-template-columns: 1fr;
-  gap: 16px;
+  gap: 10px;
 }
 .about-card{
   background: rgba(217,160,44,0.06);
   border: 1px solid rgba(217,160,44,0.2);
   border-radius: var(--radius);
-  padding: 22px 22px;
+  padding: 14px 20px;
 }
-.about-icon{ font-size:1.8rem; display:block; margin-bottom:12px; }
+.about-icon{ font-size:1.5rem; display:block; margin-bottom:6px; }
 .about-card h3{ color: var(--parchment); font-size:1.05rem; margin-bottom:8px; }
 .about-card p{ color: var(--parchment-2); font-size:0.92rem; margin-bottom:0; max-width:none; }
 
@@ -606,29 +619,6 @@ form{
   letter-spacing:normal;
   font-weight:400; font-size:0.82rem; color: var(--parchment-2); opacity:0.75; display:block; margin-top:4px;
 }
-.miel-card{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  background: rgba(217,160,44,0.08);
-  border: 1px solid rgba(217,160,44,0.25);
-  border-radius: var(--radius);
-  padding: 16px 18px;
-  margin-bottom: 20px;
-  font-family:'Work Sans', sans-serif;
-  font-size:0.92rem;
-  color: var(--parchment-2);
-  cursor:pointer;
-  transition: border-color 0.2s ease, background 0.2s ease;
-}
-.miel-card:hover{ border-color: var(--honey); background: rgba(217,160,44,0.13); }
-.miel-card input{
-  width:18px; height:18px;
-  accent-color: var(--honey);
-  flex-shrink:0;
-  cursor:pointer;
-}
-.miel-icon{ font-size:1.2rem; flex-shrink:0; }
 input[type="text"], input[type="tel"], input[type="email"], select, textarea{
   width:100%;
   font-family:'Work Sans',sans-serif;
@@ -887,23 +877,6 @@ fieldset legend{
   .msg.typing span{ animation:none; opacity:0.7; }
 }
 
-/* ---------- Prise en charge panel (apiculteur) ---------- */
-.handoff{ display:none; }
-.handoff.visible{ display:block; }
-.handoff-box{
-  max-width: 560px;
-  margin: 0 auto;
-  background: var(--parchment);
-  color: var(--bark);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  padding: 32px 36px;
-  text-align:left;
-}
-.handoff-box h2{ font-size:1.5rem; color: var(--forest); }
-.handoff-box .meta{ font-size:0.95rem; color: var(--leaf); margin-bottom: 22px; }
-.handoff-box .meta b{ color: var(--bark); }
-
 /* ---------- Footer ---------- */
 footer{
   background: var(--forest);
@@ -994,4 +967,57 @@ footer{
   .step{ border-right:none; border-bottom: 1px solid rgba(246,238,218,0.18); }
   .step:last-child{ border-bottom:none; }
   form{ padding: 28px 22px 32px; }
+}
+
+/* ---------- Défilement guidé, écran par écran (grands écrans) ----------
+   Sur un écran suffisamment large et haut, les 5 grandes sections (hero,
+   nidification, zone, comment ça marche, en attendant l'intervention)
+   occupent chacune exactement un "écran" (100vh moins la bannière promo
+   + l'en-tête, --snap-offset), et le défilement s'aligne (snap) sur le
+   début de chaque section plutôt que de défiler librement. En dessous de
+   ce seuil (mobile/tablette, ou fenêtre basse), le comportement classique
+   (hauteur libre, pas de snap) reste inchangé : forcer 100vh sur un petit
+   écran ferait l'inverse de ce qu'on veut (contenu tronqué). */
+@media (min-width: 981px) and (min-height: 640px){
+  html{ scroll-snap-type: y proximity; }
+
+  .hero,
+  #nidification,
+  #zone,
+  #comment-ca-marche,
+  #consignes{
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    min-height: calc(100vh - var(--snap-offset));
+    max-height: calc(100vh - var(--snap-offset));
+    padding-top: 28px;
+    padding-bottom: 28px;
+    display: flex;
+    align-items: center;
+    overflow-y: auto;
+  }
+  .hero > .wrap,
+  #nidification > .wrap,
+  #zone > .wrap,
+  #comment-ca-marche > .wrap,
+  #consignes > .wrap{
+    width: 100%;
+    max-height: 100%;
+  }
+
+  .section-head{ margin-bottom: 24px; }
+
+  /* L'illustration et la carte s'adaptent à la hauteur disponible plutôt
+     qu'à une largeur/hauteur fixe, pour ne jamais dépasser l'écran. */
+  .nest-scene{ max-width: min(760px, 66vh); margin-top: 12px; }
+  .zone-leaflet-map{ height: clamp(220px, 46vh, 440px); }
+
+  /* Le panneau d'onglet le plus long (FAQ) défile dans sa propre zone au
+     lieu d'agrandir toute la section au-delà d'un écran. */
+  .info-tab-panel{
+    max-height: calc(100vh - var(--snap-offset) - 230px);
+    overflow-y: auto;
+    padding-right: 8px;
+  }
+  .info-tab-nav{ margin-bottom: 16px; }
 }

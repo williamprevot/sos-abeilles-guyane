@@ -32,14 +32,26 @@ majuscules) :
 ### 1. EmailJS (envoi des emails) — gratuit, 200 emails/mois
 
 1. Créer un compte sur [emailjs.com](https://emailjs.com)
-2. Ajouter un service email relié à `maracudja973@gmail.com`
-3. Créer 3 templates nommés exactement :
-   - `template_notification` (à l'apiculteur)
-   - `template_confirmation` (au client, immédiat)
-   - `template_prise_en_charge` (au client, quand l'apiculteur confirme)
+2. Ajouter un service email relié à une boîte mail (voir le guide de configuration pour l'adresse exacte)
+3. Créer 2 templates :
+   - notification à l'apiculteur (+ copie dev)
+   - confirmation immédiate au client
 4. Dans `js/script.js`, remplacer :
    - `VOTRE_PUBLIC_KEY` → votre Public Key EmailJS
-   - `VOTRE_SERVICE_ID` → votre Service ID EmailJS
+   - les identifiants de service/templates (déjà renseignés) si vous recréez vos propres templates
+
+L'apiculteur reçoit dans cet unique email toutes les informations nécessaires
+(dont le téléphone du client) et le contacte directement par téléphone pour
+convenir d'un horaire — aucune étape de confirmation automatique par email
+n'est nécessaire.
+
+**Confidentialité :** ne jamais saisir d'adresse email réelle (apiculteur ou
+développeur) dans `js/script.js`, ni dans ce README, ni dans aucun fichier du
+dépôt — ce sont des fichiers publics, lisibles par n'importe qui via "Afficher
+le code source" ou en parcourant le dépôt. Les destinataires se configurent
+uniquement dans le champ **To Email** du modèle EmailJS `template_notification`
+(tableau de bord EmailJS) et dans les notifications Netlify Forms ci-dessous —
+deux réglages privés, jamais exposés au navigateur.
 
 ### 2. MapTiler (fond de carte) — gratuit, sans carte bancaire
 
@@ -50,8 +62,9 @@ majuscules) :
 
 ### 3. Netlify Forms (notification photo) — après déploiement
 
-Site settings → Forms → Form notifications → Add notification →
-Email notification → `maracudja973@gmail.com`.
+Project configuration → Forms → Form notifications → Add notification →
+Email notification, une fois par destinataire (apiculteur, puis dev) — voir
+le guide de configuration pour les adresses exactes.
 
 ## Déploiement
 
