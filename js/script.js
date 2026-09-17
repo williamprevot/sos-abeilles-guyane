@@ -1507,12 +1507,17 @@ function getInitialLang(){
          });
        }
  
+       // Seuil bas (comme zoneObserver) + marge de proximité : l'accrochage doit
+       // être systématique dès qu'une bonne part de la maison est visible, pas
+       // seulement quand elle occupe la moitié de l'écran — un seuil à 0.5 se
+       // faisait décrocher par de simples à-coups du scroll-snap, obligeant à
+       // dépasser puis revenir pour ré-attirer les abeilles.
        const nestObserver = new IntersectionObserver((entries) => {
          entries.forEach((entry) => {
            if(entry.isIntersecting){ docked = true; }
            else { release(); }
          });
-       }, { threshold: 0.5 });
+       }, { threshold: 0.15, rootMargin: "15% 0px" });
        nestObserver.observe(nestSection);
  
        // Sécurité supplémentaire : dès que la carte des zones d'intervention
