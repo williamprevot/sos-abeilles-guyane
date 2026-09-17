@@ -286,11 +286,11 @@ header nav a:hover{ color: var(--honey); }
   border: 1px solid rgba(246,238,218,0.15);
   background: var(--forest-2);
   position: relative;
-  /* Au-dessus de la nuée d'abeilles en arrière-plan (.swarm-canvas, z-index:5) :
-     sans ça, les points de l'essaim se dessinent par-dessus la carte et
-     gênent sa lecture. */
-  z-index: 6;
-  isolation: isolate;
+  /* La nuée d'abeilles (.swarm-canvas, z-index:5, en arrière-plan fixe sur
+     toute la page) doit rester visible par-dessus la carte, comme sur le
+     reste du site — z-index plus bas que le canvas, et pas de nouveau
+     contexte d'empilement qui l'isolerait. */
+  z-index: 1;
 }
 .map-fallback{
   position: absolute;

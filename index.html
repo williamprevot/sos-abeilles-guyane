@@ -220,7 +220,6 @@
     <div class="section-head">
       <h2>Zone d'intervention</h2>
       <p>Le service couvre le territoire de la CACL (Communauté d'Agglomération du Centre Littoral).</p>
-      <p>Survolez la carte pour voir si votre commune est concernée.</p>
     </div>
     <div id="zone-leaflet-map" class="zone-leaflet-map" role="img" aria-label="Carte géographique de la zone d'intervention : Cayenne, Rémire-Montjoly, Matoury, Macouria, Montsinéry-Tonnegrande et Roura"></div>
     <p class="map-note visually-hidden">Carte OpenStreetMap réelle : le cercle miel indique la zone d'intervention globale, de Macouria à Roura, à titre indicatif — pas une limite administrative exacte.</p>
@@ -287,9 +286,9 @@
       <div class="info-tab-panel active" data-panel="faire" id="panel-faire" role="tabpanel">
         <ul class="info-list">
           <li><span class="info-key">10 mètres minimum</span> de distance avec l'essaim</li>
-          <li>Fenêtres et portes <span class="info-key">fermées</span> à proximité</li>
-          <li>Maintenir enfants et animaux <span class="info-key">éloignés</span> de la zone</li>
-          <li>Maintenir <span class="info-key">éloignées</span> les personnes allergiques aux piqûres</li>
+          <li>Fenêtres et portes <span class="info-key">doivent être fermées</span></li>
+          <li>Maintenir enfants et animaux <span class="info-key">éloignés</span> de la zone d'essaimage</li>
+          <li>Maintenir <span class="info-key">éloignées</span> les personnes allergiques</li>
           <li>Prévenir les voisins si l'essaim est en zone partagée</li>
         </ul>
       </div>
@@ -299,8 +298,7 @@
           <li><span class="info-key">Jamais</span> d'eau, d'insecticide ou de bombe aérosol</li>
           <li><span class="info-key">Ne pas</span> déplacer ou détruire l'essaim soi-même</li>
           <li>Pas de fumée ni de feu à proximité</li>
-          <li>Bruits et vibrations (tondeuse, perceuse, musique, allées et venues)</li>
-          <li>Aucun animal ne doit renifler ou aboyer près de l'essaim</li>
+          <li>Eviter les Bruits et vibrations (tondeuse, perceuse, musique, bruits d'animaux allées et venues)</li>
         </ul>
       </div>
 
@@ -320,7 +318,7 @@
           </details>
           <details class="faq-item">
             <summary>Délai avant l'intervention ?</summary>
-            <p><span class="info-key">24 à 48h</span> en général. Priorité aux situations urgentes (passage, enfants).</p>
+            <p><span class="info-key">24 à 48h</span> selon disponibilité. Priorité aux situations urgentes (passage, enfants et animaux).</p>
           </details>
           <details class="faq-item">
             <summary>Délai de réponse à mon signalement ?</summary>
@@ -340,7 +338,7 @@
           </details>
           <details class="faq-item">
             <summary>Comment protéger mes animaux ?</summary>
-            <p>Rentrez-les, ou tenez-les à <span class="info-key">10 mètres minimum</span> de l'essaim.</p>
+            <p>Rentrez-les, ou tenez-les au calme à <span class="info-key">10 mètres minimum</span> de l'essaim.</p>
           </details>
         </div>
       </div>
@@ -353,7 +351,7 @@
   <button type="button" class="modal-close" id="report-modal-close" aria-label="Fermer">&times;</button>
   <div class="section-head">
     <h2 id="report-modal-title">Signaler un essaim</h2>
-    <p>Répondez aux questions les unes après les autres, comme dans une conversation. C'est rapide !</p>
+    <p>Répondez aux questions les unes après les autres. C'est rapide !</p>
   </div>
 
     <div class="chat-progress" aria-hidden="true"><div class="chat-progress-bar" id="chat-progress-bar"></div></div>
@@ -378,7 +376,7 @@
 
         <div class="chat-step" data-step="2" hidden>
           <div class="field">
-            <label for="telephone">Votre numéro de téléphone ?</label>
+            <label for="telephone">Quel est votre numéro de téléphone ?</label>
             <input type="tel" id="telephone" name="telephone" required autocomplete="tel">
           </div>
           <button type="button" class="btn-step">Continuer</button>
@@ -386,8 +384,8 @@
 
         <div class="chat-step" data-step="3" hidden>
           <div class="field">
-            <label for="email">Et votre email ?
-              <span class="hint">Pour vous envoyer la confirmation de prise en charge.</span>
+            <label for="email">Quel est votre email ?
+              <span class="hint">Pour obtenir la confirmation de prise en charge.</span>
             </label>
             <input type="email" id="email" name="email" required autocomplete="email">
           </div>
@@ -419,7 +417,7 @@
 
         <div class="chat-step" data-step="5" hidden>
           <div class="field">
-            <label for="adresse">Quelle est l'adresse, ou un point de repère ?</label>
+            <label for="adresse">Precisez une adresse, ou un point de repère </label>
             <input type="text" id="adresse" name="adresse" placeholder="Rue, lotissement, repère..." required>
           </div>
           <button type="button" class="btn-step">Continuer</button>
@@ -469,7 +467,7 @@
 
         <div class="chat-step" data-step="9" hidden>
           <div class="field">
-            <label for="photo">Une photo de l'essaim ?
+            <label for="photo">Avez-vous une photo de l'essaim ?
               <span class="hint">Facultatif — aide l'apiculteur à évaluer la situation. Compressée automatiquement avant l'envoi.</span>
             </label>
             <input type="file" id="photo" name="photo" accept="image/*" capture="environment">
@@ -504,7 +502,7 @@
           <div class="success-screen" id="success-screen" hidden>
             <div class="success-icon">✓</div>
             <h3>Signalement envoyé !</h3>
-            <p>Vous allez recevoir un email de confirmation. Un apiculteur local va prendre en charge votre demande.</p>
+            <p>Un apiculteur local prendra en charge votre demande d'intervention.</p>
             <button type="button" class="btn-submit" id="success-close-btn">Revenir au site</button>
           </div>
         </div>
@@ -519,7 +517,7 @@
   <button type="button" class="modal-close" id="about-modal-close" aria-label="Fermer">&times;</button>
   <div class="section-head">
     <h2 id="about-modal-title">À propos de nous</h2>
-    <p>Une entreprise familiale d'apiculture, établie depuis 2006 aux alentours de Rémire-Montjoly, animée par trois valeurs simples.</p>
+    <p>Une entreprise familiale d'apiculture, établie depuis 2006 aux alentours de Cayenne, animée par trois valeurs simples.</p>
   </div>
   <div class="about-grid">
     <div class="about-card">
@@ -535,7 +533,7 @@
     <div class="about-card">
       <span class="about-icon">⚖️</span>
       <h3>Équité</h3>
-      <p>Un service pensé pour rester juste, aussi bien pour les personnes qui nous signalent un essaim que pour notre travail d'apiculteur.</p>
+      <p>Un service pensé pour rester juste, aussi bien pour les personnes qui nous signalent un essaim que pour nos apiculteurs.</p>
     </div>
   </div>
 </div>
