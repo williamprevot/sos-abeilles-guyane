@@ -8,8 +8,7 @@
 <meta name="robots" content="index, follow">
 <!-- Empêche la traduction automatique du navigateur (Chrome, Edge...) : le site
      a déjà son propre système de langues (FR/EN/ES/PT/ZH, sélecteur en en-tête),
-     fiable et relu — la traduction automatique du navigateur ferait doublon et
-     se déclenche mal quand notre JS change dynamiquement l'attribut lang. -->
+     fiable -->
 <meta name="google" content="notranslate">
 <meta name="theme-color" content="#16281C">
 <meta property="og:title" content="S.O.S Abeilles Guyane — Collecte gratuite d'essaims">
@@ -165,7 +164,7 @@
   <div class="wrap">
     <div class="section-head">
       <h2 data-i18n="nid.title">Où les essaims aiment s'installer</h2>
-      <p data-i18n="nid.subtitle">Survolez les différentes zones pour découvrir les emplacements où les essaims s'installent le plus souvent.</p>
+      <p data-i18n="nid.subtitle">Survolez les différentes zones pour découvrir les emplacements de la maison où les essaims s'installent le plus souvent.</p>
     </div>
     <div class="nest-scene">
       <svg class="nest-illustration" viewBox="0 0 800 420" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -209,9 +208,9 @@
         <span class="hotspot-dot"></span>
         <span class="hotspot-tip" data-i18n-html="nid.hotspot3.tip">Seaux et pneus abandonnés<br><small>secs et à l'abri de la pluie</small></span>
       </button>
-      <button type="button" class="nest-hotspot" style="left:50.5%; top:73%;" data-i18n-aria-label="nid.hotspot4.aria" aria-label="Compteurs d'eau ou électriques : leur cavité protégée est idéale">
+      <button type="button" class="nest-hotspot" style="left:50.5%; top:73%;" data-i18n-aria-label="nid.hotspot4.aria" aria-label="Compteurs d'eau ou d'électricité : leur cavité protégée est idéale">
         <span class="hotspot-dot"></span>
-        <span class="hotspot-tip" data-i18n-html="nid.hotspot4.tip">Compteurs d'eau et d'électricité<br><small>cavité protégée idéale</small></span>
+        <span class="hotspot-tip" data-i18n-html="nid.hotspot4.tip">Compteurs d'eau ou d'électricité<br><small>cavité protégée idéale</small></span>
       </button>
       <button type="button" class="nest-hotspot" style="left:83.75%; top:76.2%;" data-i18n-aria-label="nid.hotspot5.aria" aria-label="Cartons et caisses vides : laissés dehors ou dans un abri de jardin">
         <span class="hotspot-dot"></span>
@@ -228,7 +227,7 @@
       <p data-i18n="zone.subtitle">Le service couvre le territoire de la CACL (Communauté d'Agglomération du Centre Littoral).</p>
     </div>
     <div id="zone-leaflet-map" class="zone-leaflet-map" role="img" data-i18n-aria-label="zone.mapAria" aria-label="Carte géographique de la zone d'intervention : Cayenne, Rémire-Montjoly, Matoury, Macouria, Montsinéry-Tonnegrande et Roura"></div>
-    <p class="map-note visually-hidden" data-i18n="zone.mapNote">Carte OpenStreetMap réelle : le cercle miel indique la zone d'intervention globale, de Macouria à Roura, à titre indicatif — pas une limite administrative exacte.</p>
+    <p class="map-note visually-hidden" data-i18n="zone.mapNote">Carte OpenStreetMap réelle : le cercle miel indique la zone d'intervention globale, de Macouria à Roura, à titre indicatif.</p>
   </div>
 </section>
 
@@ -517,8 +516,6 @@
     </div>
 </div>
 
-<!-- Boîte de dialogue flottante "À propos de nous" — même principe que la boîte
-     "Signaler un essaim" ci-dessus, ouverte uniquement au clic sur "À propos" dans le pied de page. -->
 <div class="modal-backdrop" id="about-backdrop" hidden></div>
 <div class="report-modal about-modal" id="about-modal" hidden role="dialog" aria-modal="true" aria-labelledby="about-modal-title">
   <button type="button" class="modal-close" id="about-modal-close" data-i18n-aria-label="modal.close" aria-label="Fermer">&times;</button>
@@ -545,8 +542,6 @@
   </div>
 </div>
 
-<!-- Boîte de dialogue flottante "Politique de confidentialité" — même principe que les deux
-     boîtes ci-dessus, ouverte au clic sur "Politique de confidentialité" (pied de page ou formulaire). -->
 <div class="modal-backdrop" id="privacy-backdrop" hidden></div>
 <div class="report-modal privacy-modal" id="privacy-modal" hidden role="dialog" aria-modal="true" aria-labelledby="privacy-modal-title">
   <button type="button" class="modal-close" id="privacy-modal-close" aria-label="Fermer">&times;</button>
