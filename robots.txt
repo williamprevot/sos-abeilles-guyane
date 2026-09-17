@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://VOTRE-DOMAINE.com/sitemap.xml
+Sitemap: https://sosabeillesguyane.netlify.app/sitemap.xml

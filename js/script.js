@@ -1306,8 +1306,14 @@
            depuis: raw.depuis,
            urgence: raw.urgence,
            message: raw.message || "—",
+           // La photo n'est PAS jointe à cet email (EmailJS ne gère pas les
+           // pièces jointes volumineuses côté gratuit) : elle part uniquement
+           // via Netlify Forms. On donne donc directement le lien vers le
+           // tableau de bord Netlify plutôt que de renvoyer vers un "email
+           // séparé" qui n'existe que si les notifications Netlify Forms
+           // sont activées (Site settings > Forms > Form notifications).
            a_photo: hasPhoto
-             ? "Oui — voir l'email séparé envoyé par Netlify Forms (dossier " + requestId + ") pour la photo jointe."
+             ? "Oui — à récupérer dans le tableau de bord Netlify : https://app.netlify.com/sites/sosabeillesguyane/forms (dossier " + requestId + ")."
              : "Aucune photo jointe."
          };
    
