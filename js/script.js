@@ -149,10 +149,24 @@
        const NEIGHBOR_RADIUS = 55;   // rayon de perception pour l'alignement
        const MAX_NEIGHBOR_CHECKS = 24; // plafond dur : évite l'explosion quand un essaim se resserre
        const SEPARATION_RADIUS = 7;  // distance minimale confortable entre deux points
-       const FLEE_RADIUS = 85;
-       const CRUISE_SPEED = 0.5;     // vitesse de croisière visée
-       const BOUNCE_FACTOR = 1.35;   // rebond aux bords : vitesse amplifiée pour "propulser" à l'opposé
-       const BOOST_DURATION = 14;    // nombre d'images pendant lesquelles la propulsion reste active
+       const FLEE_RADIUS = 110;
+       const CRUISE_SPEED = 0.9;     // vitesse de croisière visée — plus vif, moins "flottant"
+       const BOUNCE_FACTOR = 2.2;    // rebond aux bords : vitesse fortement amplifiée pour un vrai "éclatement"
+       const BOOST_DURATION = 20;    // nombre d'images pendant lesquelles la propulsion reste active
+       const FLEE_BOOST_DURATION = 16; // fuite au passage de la souris : même logique de propulsion, instantanée
+       const SCATTER_KICK = 1.6;     // kick latéral aléatoire ajouté à chaque rebond, pour un éclatement en grappes désordonnées plutôt qu'un simple rebond uniforme
+       const ZIGZAG_AMOUNT = 1.15;   // force latérale (perpendiculaire à la reine) qui rend la trajectoire d'approche erratique plutôt qu'en ligne droite
+       // Approche finale sur une vignette de nidification (reine "accrochée") : cas à part.
+       // Sans ça, des centaines d'abeilles convergent en ligne quasi droite vers un point fixe,
+       // ce qui donne un vol qui "tombe" verticalement au lieu de grouiller.
+       const DOCK_ZIGZAG_BOOST = 2.4;     // désordre latéral individuel bien plus fort qu'un simple repos en vol
+       const DOCK_ZIGZAG_FREQ = 0.26;     // oscillation plus rapide : des trajectoires en S courtes et nerveuses, pas de longues ondulations
+       const DOCK_WANDER_JITTER = 0.9;    // vol individuel beaucoup plus imprévisible que le repos normal
+       const DOCK_WANDER_FORCE = 0.14;
+       const DOCK_ATTRACTION = 0.011;     // se ruent vers leur reine posée, plus vite qu'un simple resserrement
+       const DOCK_SEPARATION_RADIUS = 15; // rayon de collision élargi : à cette densité, les abeilles qui convergent doivent se croiser, s'éviter et se percuter
+       const DOCK_BUMP_FORCE = 1.2;       // réponse à la collision nettement plus franche qu'un simple lissage
+       const DOCK_BUMP_BOOST = 7;         // petit coup de vitesse bref à l'impact, pour un vrai rebond plutôt qu'un glissement
        const SCROLL_IMPULSE = 0.05;  // force transmise à l'essaim quand on fait défiler la page
        const CAPTURE_RADIUS = 130;   // distance à laquelle une abeille peut changer de reine
        const CAPTURE_CHANCE = 0.015; // chance par image de changer d'allégeance en passant à côté
@@ -166,6 +180,7 @@
        let queens = [];
        let mouse = { x: -9999, y: -9999, active: false };
        let rafId = null;
+       let frameCount = 0;
    
        function resize(){
          width = window.innerWidth;
@@ -192,6 +207,7 @@
            vx: Math.cos(angle) * CRUISE_SPEED,
            vy: Math.sin(angle) * CRUISE_SPEED,
            wanderAngle: angle,
+           zigzagSeed: Math.random() * Math.PI * 2, // déphasage individuel : le zigzag de chaque abeille est indépendant
            r: 0.9 + Math.random() * 1.1,
            boostFrames: 0,
            queenIndex: queenIndex,
@@ -217,6 +233,7 @@
              vx: Math.cos(wanderAngle) * 0.2,
              vy: Math.sin(wanderAngle) * 0.2,
              wanderAngle: wanderAngle,
+             pulsePhase: Math.random() * Math.PI * 2, // désynchronise la pulsation de chaque essaim
              boostFrames: 0,
              state: "flying",
              stateTimer: 100 + Math.floor(Math.random() * 300),
@@ -294,37 +311,44 @@
          // Mode "accroché" (section nidification visible) : la reine se
          // stabilise sur sa vignette, état "resting" forcé, vol en pause.
          if(q.dockTarget){
-           q.x += (q.dockTarget.x - q.x) * 0.07;
-           q.y += (q.dockTarget.y - q.y) * 0.07;
+           q.x += (q.dockTarget.x - q.x) * 0.22;
+           q.y += (q.dockTarget.y - q.y) * 0.22;
            q.vx = 0; q.vy = 0;
            q.state = "resting";
            return;
          }
    
          if(q.state === "flying"){
-           q.wanderAngle += (Math.random() - 0.5) * 0.22;
-           q.vx += Math.cos(q.wanderAngle) * 0.02;
-           q.vy += Math.sin(q.wanderAngle) * 0.02;
+           q.wanderAngle += (Math.random() - 0.5) * 0.4;
+           q.vx += Math.cos(q.wanderAngle) * 0.045;
+           q.vy += Math.sin(q.wanderAngle) * 0.045;
          } else {
            // Se pose : freine fortement jusqu'à l'arrêt
            q.vx *= 0.9;
            q.vy *= 0.9;
          }
    
-         // Rappel doux vers sa zone d'origine, sur l'espace de vol disponible
-         // (sans ça, scroll et rebonds finissent par tout pousser vers un coin).
+         // Rappel vers sa zone d'origine, sur l'espace de vol disponible (sans ça,
+         // scroll et rebonds finissent par tout pousser vers un coin) — avec un
+         // léger zigzag perpendiculaire pour que le trajet de retour ne soit pas
+         // une ligne droite téléguidée.
          const flyTop = headerHeight;
          const flyBottom = Math.min(height, beeCeilingY);
          if(flyBottom > flyTop){
            const homeX = width * q.homeXFrac;
            const homeY = flyTop + (flyBottom - flyTop) * q.homeYFrac;
-           q.vx += (homeX - q.x) * 0.00025;
-           q.vy += (homeY - q.y) * 0.00025;
+           const dxh = homeX - q.x, dyh = homeY - q.y;
+           q.vx += dxh * 0.0009;
+           q.vy += dyh * 0.0009;
+           const distH = Math.hypot(dxh, dyh) || 1;
+           const wobble = Math.sin(frameCount * 0.05 + q.pulsePhase) * 0.35;
+           q.vx += (-dyh / distH) * wobble;
+           q.vy += (dxh / distH) * wobble;
          }
    
          // Répulsion douce entre reines, pour éviter qu'elles finissent
          // regroupées au même endroit avec le temps.
-         const minQueenDist = Math.min(width, height) * 0.26;
+         const minQueenDist = Math.min(width, height) * 0.3; // légèrement élargi : les essaims se répartissent mieux sur l'ensemble de la zone de vol
          queens.forEach((other) => {
            if(other === q) return;
            const dx = q.x - other.x, dy = q.y - other.y;
@@ -336,20 +360,21 @@
            }
          });
    
-         // Fuite légère : si la souris s'approche du cœur de l'essaim, il se déplace
+         // Fuite : si la souris s'approche du cœur de l'essaim, il détale d'un coup
          if(mouse.active){
            const dx = q.x - mouse.x, dy = q.y - mouse.y;
            const dist = Math.hypot(dx, dy) || 1;
            if(dist < FLEE_RADIUS){
-             const force = (1 - dist / FLEE_RADIUS) * 0.4;
+             const force = (1 - dist / FLEE_RADIUS) * 0.7;
              q.vx += (dx / dist) * force;
              q.vy += (dy / dist) * force;
+             q.boostFrames = Math.max(q.boostFrames, FLEE_BOOST_DURATION);
            }
          }
    
          q.vx *= 0.97;
          q.vy *= 0.97;
-         const baseMaxQueenSpeed = q.state === "flying" ? 0.4 : 0.06;
+         const baseMaxQueenSpeed = q.state === "flying" ? 0.75 : 0.12;
          const maxQueenSpeed = q.boostFrames > 0 ? baseMaxQueenSpeed * BOUNCE_FACTOR : baseMaxQueenSpeed;
          if(q.boostFrames > 0){ q.boostFrames--; }
          const speed = Math.hypot(q.vx, q.vy);
@@ -359,26 +384,37 @@
          }
    
          // Rebond sur les bords : au lieu de simplement s'arrêter au bord,
-         // elle repart propulsée de l'autre côté, et reste plus rapide un instant
+         // elle repart propulsée de l'autre côté avec un léger kick latéral —
+         // sa nuée, attirée vers elle, suit le mouvement et éclate avec elle.
          let nqx = q.x + q.vx;
          let nqy = q.y + q.vy;
-         if(nqx < 0){ nqx = -nqx; q.vx = Math.abs(q.vx) * BOUNCE_FACTOR; q.boostFrames = BOOST_DURATION; }
-         else if(nqx > width){ nqx = 2 * width - nqx; q.vx = -Math.abs(q.vx) * BOUNCE_FACTOR; q.boostFrames = BOOST_DURATION; }
-         if(nqy < headerHeight){ nqy = 2 * headerHeight - nqy; q.vy = Math.abs(q.vy) * BOUNCE_FACTOR; q.boostFrames = BOOST_DURATION; }
-         else if(nqy > height){ nqy = 2 * height - nqy; q.vy = -Math.abs(q.vy) * BOUNCE_FACTOR; q.boostFrames = BOOST_DURATION; }
-         if(nqy > beeCeilingY){ nqy = beeCeilingY; q.vy = -Math.abs(q.vy) * BOUNCE_FACTOR; q.boostFrames = BOOST_DURATION; }
+         if(nqx < 0){ nqx = -nqx; q.vx = Math.abs(q.vx) * BOUNCE_FACTOR; q.vy += (Math.random() - 0.5) * SCATTER_KICK * 0.6; q.boostFrames = BOOST_DURATION; }
+         else if(nqx > width){ nqx = 2 * width - nqx; q.vx = -Math.abs(q.vx) * BOUNCE_FACTOR; q.vy += (Math.random() - 0.5) * SCATTER_KICK * 0.6; q.boostFrames = BOOST_DURATION; }
+         if(nqy < headerHeight){ nqy = 2 * headerHeight - nqy; q.vy = Math.abs(q.vy) * BOUNCE_FACTOR; q.vx += (Math.random() - 0.5) * SCATTER_KICK * 0.6; q.boostFrames = BOOST_DURATION; }
+         else if(nqy > height){ nqy = 2 * height - nqy; q.vy = -Math.abs(q.vy) * BOUNCE_FACTOR; q.vx += (Math.random() - 0.5) * SCATTER_KICK * 0.6; q.boostFrames = BOOST_DURATION; }
+         if(nqy > beeCeilingY){ nqy = beeCeilingY; q.vy = -Math.abs(q.vy) * BOUNCE_FACTOR; q.vx += (Math.random() - 0.5) * SCATTER_KICK * 0.6; q.boostFrames = BOOST_DURATION; }
          q.x = nqx;
          q.y = nqy;
        }
    
        function step(p, grid){
+         const queen = queens[p.queenIndex];
+         const resting = queen.state === "resting";
+         const docking = !!queen.dockTarget; // approche finale sur une vignette de nidification : cas à part, plus chaotique
+         let disturbed = false;
+   
          let aliVX = 0, aliVY = 0, aliN = 0;
          let sepX = 0, sepY = 0;
+         let bumped = false;
    
          // Boucle inlinée (pas de fonction de rappel) pour la fluidité, et
          // plafonnée à MAX_NEIGHBOR_CHECKS : sans ça, quand un essaim se
          // resserre, des centaines de points tombent dans les mêmes cellules
          // et le calcul explose. Un échantillon suffit pour la moyenne.
+         // Rayon de collision élargi pendant l'accrochage : à cette densité,
+         // les abeilles qui convergent doivent se croiser, s'éviter et se
+         // percuter plutôt que de glisser en douceur les unes sur les autres.
+         const effSepRadius = docking ? DOCK_SEPARATION_RADIUS : SEPARATION_RADIUS;
          const gcx = Math.floor(p.x / NEIGHBOR_RADIUS);
          const gcy = Math.floor(p.y / NEIGHBOR_RADIUS);
          let checked = 0;
@@ -397,48 +433,83 @@
                if(dist < NEIGHBOR_RADIUS){
                  aliVX += other.vx; aliVY += other.vy; aliN++;
                }
-               if(dist < SEPARATION_RADIUS){
+               if(dist < effSepRadius){
                  sepX -= ndx / dist; sepY -= ndy / dist;
+                 if(docking){ bumped = true; }
                }
              }
            }
          }
    
-         const queen = queens[p.queenIndex];
-         const resting = queen.state === "resting";
-         let disturbed = false;
-   
          // Attraction vers sa reine : faible et lâche en vol (nuée étalée et
-         // chaotique), forte dès qu'elle se pose (la nuée se resserre vite)
-         const attraction = resting ? 0.0028 : 0.0011;
+         // chaotique), forte et pulsée dès qu'elle se pose (la nuée se resserre
+         // par saccades, comme une contraction, plutôt qu'en glissant en douceur).
+         // Encore plus vive quand la reine est accrochée à sa vignette : les
+         // abeilles se ruent vers elle pour la rejoindre le plus vite possible.
+         const restPulse = resting ? (1.4 + 1.1 * Math.max(0, Math.sin(frameCount * 0.045 + queen.pulsePhase))) : 1;
+         const attraction = (docking ? DOCK_ATTRACTION : (resting ? 0.0075 : 0.0016)) * restPulse;
          const dxq = queen.x - p.x, dyq = queen.y - p.y;
          p.vx += dxq * attraction;
          p.vy += dyq * attraction;
    
-         // Alignement léger : donne un mouvement d'ensemble, pas juste un nuage figé
-         if(aliN > 0){
-           p.vx += (aliVX / aliN - p.vx) * 0.02;
-           p.vy += (aliVY / aliN - p.vy) * 0.02;
-         }
-         // Séparation : éviter de se superposer exactement
-         p.vx += sepX * 0.5;
-         p.vy += sepY * 0.5;
+         // Approche en zigzag : une force perpendiculaire à l'axe abeille→reine,
+         // oscillante et déphasée par abeille, casse la ligne droite et donne
+         // une trajectoire erratique en "S" plutôt qu'un vol téléguidé. Bien plus
+         // marquée à l'approche d'une vignette de nidification : sans ça, des
+         // centaines d'abeilles "tombent" en ligne quasi verticale sur leur reine
+         // posée, au lieu de grouiller horizontalement en s'en approchant — la
+         // reine, elle, continue d'avancer plus directement vers son point
+         // d'accroche, ce qui garde une trajectoire d'ensemble lisible.
+         // Ce slalom n'a de sens que s'il y a une autre abeille à dépasser :
+         // une abeille de queue isolée (aucune congénère proche dans aliN) n'a
+         // rien à éviter et vole donc bien plus droit vers sa reine — seules
+         // celles prises dans le paquet zigzaguent fort.
+         const dockCrowdFactor = docking ? Math.min(1, aliN / 5) : 1;
+         const distQ = Math.hypot(dxq, dyq) || 1;
+         const perpX = -dyq / distQ, perpY = dxq / distQ;
+         const zigzagPhase = frameCount * (docking ? DOCK_ZIGZAG_FREQ : (resting ? 0.09 : 0.15)) + p.zigzagSeed;
+         const zigzagStrength = (docking ? DOCK_ZIGZAG_BOOST * dockCrowdFactor : (resting ? 0.55 : 1)) * ZIGZAG_AMOUNT;
+         const zigzag = Math.sin(zigzagPhase) * zigzagStrength;
+         p.vx += perpX * zigzag;
+         p.vy += perpY * zigzag;
    
-         // Vol erratique lissé : frénétique en vol, plus calme une fois posée
-         const wanderJitter = resting ? 0.18 : 0.5;
-         const wanderForce = resting ? 0.018 : 0.09;
+         // Alignement très léger : juste assez pour garder un semblant de nuée,
+         // sans lisser le mouvement au point de ressembler à un banc de poissons.
+         if(aliN > 0){
+           p.vx += (aliVX / aliN - p.vx) * 0.012;
+           p.vy += (aliVY / aliN - p.vy) * 0.012;
+         }
+         // Séparation : éviter de se superposer exactement — nettement plus
+         // franche à l'approche d'une vignette, pour un vrai croisement/rebond
+         // entre abeilles plutôt qu'un simple lissage de trajectoire.
+         p.vx += sepX * (docking ? DOCK_BUMP_FORCE : 0.5);
+         p.vy += sepY * (docking ? DOCK_BUMP_FORCE : 0.5);
+         if(docking && bumped){
+           // Petit coup de vitesse bref à l'impact : lecture visuelle d'un vrai
+           // rebond entre deux abeilles qui se percutent, pas d'un glissement.
+           p.boostFrames = Math.max(p.boostFrames, DOCK_BUMP_BOOST);
+         }
+   
+         // Vol erratique et saccadé : frénétique en vol, toujours nerveux une fois
+         // posée — encore plus imprévisible à l'approche d'une vignette, pour un
+         // désordre individuel bien visible pendant que la reine visée avance
+         // plus franchement vers son point d'accroche.
+         const wanderJitter = docking ? DOCK_WANDER_JITTER : (resting ? 0.4 : 1.0);
+         const wanderForce = docking ? DOCK_WANDER_FORCE : (resting ? 0.05 : 0.18);
          p.wanderAngle += (Math.random() - 0.5) * wanderJitter;
          p.vx += Math.cos(p.wanderAngle) * wanderForce;
          p.vy += Math.sin(p.wanderAngle) * wanderForce;
    
-         // Fuite au passage de la souris (elle cherche quand même à se reposer ensuite)
+         // Fuite au passage de la souris : réaction immédiate et vive (même
+         // mécanique de propulsion que les rebonds), pas juste une petite poussée.
          if(mouse.active){
            const dx = p.x - mouse.x, dy = p.y - mouse.y;
            const dist = Math.hypot(dx, dy) || 1;
            if(dist < FLEE_RADIUS){
-             const force = (1 - dist / FLEE_RADIUS) * 1.1;
+             const force = (1 - dist / FLEE_RADIUS) * 1.9;
              p.vx += (dx / dist) * force;
              p.vy += (dy / dist) * force;
+             p.boostFrames = Math.max(p.boostFrames, FLEE_BOOST_DURATION);
              disturbed = true;
            }
          }
@@ -446,7 +517,7 @@
          // Frottement + vitesse maximale (plus élevée en vol, pour l'effet frénétique)
          p.vx *= 0.95;
          p.vy *= 0.95;
-         const baseMaxSpeed = resting ? 1.1 : 2.5;
+         const baseMaxSpeed = resting ? 1.6 : 3.6;
          const maxSpeed = p.boostFrames > 0 ? baseMaxSpeed * BOUNCE_FACTOR : baseMaxSpeed;
          if(p.boostFrames > 0){ p.boostFrames--; }
          const speed = Math.hypot(p.vx, p.vy);
@@ -455,18 +526,20 @@
            p.vy = (p.vy / speed) * maxSpeed;
          }
    
-         // Rebond sur les bords de l'écran : propulsée à l'opposé plutôt que stoppée,
-         // et reste plus rapide un court instant (comme relancée)
+         // Rebond sur les bords de l'écran : propulsée à l'opposé, avec en plus un
+         // kick latéral aléatoire — chaque abeille rebondit un peu différemment,
+         // ce qui éclate la grappe en plein vol plutôt que de la faire ricocher
+         // comme un seul bloc.
          let nx = p.x + p.vx;
          let ny = p.y + p.vy;
-         if(nx < 0){ nx = -nx; p.vx = Math.abs(p.vx) * BOUNCE_FACTOR; p.boostFrames = BOOST_DURATION; disturbed = true; }
-         else if(nx > width){ nx = 2 * width - nx; p.vx = -Math.abs(p.vx) * BOUNCE_FACTOR; p.boostFrames = BOOST_DURATION; disturbed = true; }
-         if(ny < headerHeight){ ny = 2 * headerHeight - ny; p.vy = Math.abs(p.vy) * BOUNCE_FACTOR; p.boostFrames = BOOST_DURATION; disturbed = true; }
-         else if(ny > height){ ny = 2 * height - ny; p.vy = -Math.abs(p.vy) * BOUNCE_FACTOR; p.boostFrames = BOOST_DURATION; disturbed = true; }
+         if(nx < 0){ nx = -nx; p.vx = Math.abs(p.vx) * BOUNCE_FACTOR; p.vy += (Math.random() - 0.5) * SCATTER_KICK; p.boostFrames = BOOST_DURATION; disturbed = true; }
+         else if(nx > width){ nx = 2 * width - nx; p.vx = -Math.abs(p.vx) * BOUNCE_FACTOR; p.vy += (Math.random() - 0.5) * SCATTER_KICK; p.boostFrames = BOOST_DURATION; disturbed = true; }
+         if(ny < headerHeight){ ny = 2 * headerHeight - ny; p.vy = Math.abs(p.vy) * BOUNCE_FACTOR; p.vx += (Math.random() - 0.5) * SCATTER_KICK; p.boostFrames = BOOST_DURATION; disturbed = true; }
+         else if(ny > height){ ny = 2 * height - ny; p.vy = -Math.abs(p.vy) * BOUNCE_FACTOR; p.vx += (Math.random() - 0.5) * SCATTER_KICK; p.boostFrames = BOOST_DURATION; disturbed = true; }
          // Plafond bas strict : jamais plus bas que le titre "En attendant
          // l'intervention" (devient négatif une fois remonté hors écran,
          // ce qui fait aussi disparaître la nuée)
-         if(ny > beeCeilingY){ ny = beeCeilingY; p.vy = -Math.abs(p.vy) * BOUNCE_FACTOR; p.boostFrames = BOOST_DURATION; disturbed = true; }
+         if(ny > beeCeilingY){ ny = beeCeilingY; p.vy = -Math.abs(p.vy) * BOUNCE_FACTOR; p.vx += (Math.random() - 0.5) * SCATTER_KICK; p.boostFrames = BOOST_DURATION; disturbed = true; }
          p.x = nx;
          p.y = ny;
    
@@ -490,6 +563,7 @@
          ctx.clearRect(0, 0, width, height);
          const grid = withMotion ? buildGrid(NEIGHBOR_RADIUS) : null;
          if(withMotion){
+           frameCount++;
            queens.forEach((q) => { updateQueenState(q); stepQueen(q); });
            particles.forEach((p) => { step(p, grid); });
          }
@@ -529,6 +603,39 @@
              counts[qi]++;
            }
          }
+   
+         // De temps en temps, une reine abandonne complètement sa zone de repos
+         // habituelle pour une nouvelle, ailleurs à l'écran — sinon les essaims
+         // finissent toujours par se reformer aux mêmes anciens emplacements.
+         // Le déménagement est accompagné d'un coup de vent qui disperse sa nuée,
+         // pour que le départ ait l'air d'un vrai envol plutôt que d'un glissement.
+         if(Math.random() < 0.5){
+           const candidates = queens.filter((q) => !q.dockTarget);
+           if(candidates.length){
+             const q = candidates[Math.floor(Math.random() * candidates.length)];
+             q.homeXFrac = 0.12 + Math.random() * 0.76;
+             q.homeYFrac = 0.15 + Math.random() * 0.7;
+             burstQueenAndSwarm(q);
+           }
+         }
+       }
+   
+       // Disperse une reine et toute sa nuée d'un coup — utilisé au décollage
+       // (fin de nidification) et lors d'un déménagement vers une nouvelle zone.
+       function burstQueenAndSwarm(q){
+         const qAngle = Math.random() * Math.PI * 2;
+         q.vx += Math.cos(qAngle) * 1.1;
+         q.vy += Math.sin(qAngle) * 1.1;
+         q.boostFrames = BOOST_DURATION * 2;
+         const qi = queens.indexOf(q);
+         particles.forEach((p) => {
+           if(p.queenIndex !== qi) return;
+           const angle = Math.random() * Math.PI * 2;
+           const force = 0.8 + Math.random() * 1.6;
+           p.vx += Math.cos(angle) * force;
+           p.vy += Math.sin(angle) * force;
+           p.boostFrames = BOOST_DURATION * 2;
+         });
        }
    
        function loop(){
@@ -615,7 +722,12 @@
    
          function release(){
            docked = false;
-           queens.forEach((q) => { q.dockTarget = null; });
+           // Redécollage : chaque reine posée quitte sa vignette d'un coup, et
+           // toute sa nuée éclate avec elle — pas une glissade, un vrai envol brusque.
+           queens.forEach((q) => {
+             if(q.dockTarget){ burstQueenAndSwarm(q); }
+             q.dockTarget = null;
+           });
          }
    
          const nestObserver = new IntersectionObserver((entries) => {
