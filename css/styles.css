@@ -544,11 +544,16 @@ header nav a:hover{ color: var(--honey); }
   width: min(680px, 92vw);
   max-height: 88vh;
   overflow-y: auto;
-  background: var(--forest);
+  /* Effet "verre dépoli" : la carte reste identifiable (pour la lisibilité
+     du formulaire) mais laisse deviner le site flouté derrière, dans le
+     même esprit que l'animation de chargement flottante. */
+  background: rgba(22,40,28,0.74);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
   color: var(--parchment);
-  border: 1px solid rgba(217,160,44,0.25);
-  border-radius: 6px;
-  box-shadow: 0 24px 70px rgba(0,0,0,0.5);
+  border: 1px solid rgba(217,160,44,0.3);
+  border-radius: 10px;
+  box-shadow: 0 24px 70px rgba(0,0,0,0.5), inset 0 1px 0 rgba(246,238,218,0.06);
   padding: 44px 40px 36px;
   z-index: 61;
   animation: modal-pop-in 0.22s ease both;
