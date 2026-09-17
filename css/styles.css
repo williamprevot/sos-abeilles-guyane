@@ -10,11 +10,8 @@
   --alert: #B23A1F;
   --line: rgba(75,50,33,0.18);
   --radius: 3px;
-  /* Hauteur réservée en haut de l'écran par la bannière promo (fixe) +
-     l'en-tête (collant) : utilisée à la fois pour l'ancrage des liens de
-     navigation (scroll-margin-top) et pour le calcul de la hauteur d'un
-     "écran" en mode défilement guidé ci-dessous, afin que les deux
-     restent toujours cohérents. */
+  /* Hauteur bannière promo + en-tête : sert à l'ancrage des liens (scroll-margin-top)
+     et au calcul de la hauteur d'écran en défilement guidé (voir plus bas). */
   --snap-offset: 112px;
 }
 
@@ -184,10 +181,8 @@ header nav a:hover{ color: var(--honey); }
 .lang-option.active{ color: var(--honey); font-weight:600; }
 
 /* ---------- Bouton "Signaler un essaim" (petit/moyen écran, dans l'en-tête) ----------
-   Ce seuil (1000px) est volontairement différent de celui utilisé pour le hero (820px) :
-   il correspond à la largeur minimale nécessaire pour que la navigation complète
-   (liens + bouton) reste sur une seule ligne, à côté du sélecteur de langue,
-   sans jamais retomber à la ligne. */
+   Seuil (1000px) différent du hero (820px) : largeur mini pour que nav + bouton
+   tiennent sur une ligne à côté du sélecteur de langue. */
 .mobile-report-fab{ display: none; }
 @media (max-width: 1000px){
   header nav{ display:none; }
@@ -214,9 +209,8 @@ header nav a:hover{ color: var(--honey); }
 }
 
 /* ---------- En-tête sur très petits écrans (ex. iPhone) ----------
-   On resserre les espacements et on tronque le nom de la marque en priorité,
-   pour garantir que le bouton "Signaler un essaim" et le sélecteur de langue
-   restent toujours entièrement visibles, sans jamais déborder de l'écran. */
+   Espacements resserrés, nom de marque tronqué en priorité, pour garder le
+   bouton "Signaler" et le sélecteur de langue visibles sans débordement. */
 @media (max-width: 480px){
   header .wrap{ padding: 0 16px; }
   .header-right{ gap: 8px; }
@@ -286,10 +280,7 @@ header nav a:hover{ color: var(--honey); }
   border: 1px solid rgba(246,238,218,0.15);
   background: var(--forest-2);
   position: relative;
-  /* La nuée d'abeilles (.swarm-canvas, z-index:5, en arrière-plan fixe sur
-     toute la page) doit rester visible par-dessus la carte, comme sur le
-     reste du site — z-index plus bas que le canvas, et pas de nouveau
-     contexte d'empilement qui l'isolerait. */
+  /* z-index sous .swarm-canvas (5) pour que la nuée reste visible par-dessus la carte. */
   z-index: 1;
 }
 .map-fallback{
@@ -334,12 +325,10 @@ header nav a:hover{ color: var(--honey); }
 .section-head{ max-width: 620px; margin-bottom: 44px; }
 .section-head h2{ font-size: clamp(1.6rem, 3vw, 2.1rem); color: var(--honey); }
 
-/* ---------- À propos (contenu de la boîte de dialogue flottante) ----------
-   Contenu volontairement compact : à l'inverse de la politique de
-   confidentialité (texte juridique long, qui doit défiler dans la boîte
-   sur beaucoup d'écrans, ce qui est normal), cette boîte n'a que 3 courtes
-   cartes — l'objectif est qu'elle tienne toujours sans avoir besoin de
-   défiler, même sur un écran de portable courant (ex. 1366×768). */
+/* ---------- À propos (boîte de dialogue flottante) ----------
+   Contenu volontairement compact (3 courtes cartes) pour tenir sans défiler,
+   même sur un écran de portable courant — à l'inverse de la politique de
+   confidentialité (texte juridique long, défilement normal). */
 .about-modal{ padding: 30px 36px 26px; }
 .about-modal .section-head{ margin-bottom: 18px; }
 .about-grid{
@@ -464,7 +453,7 @@ header nav a:hover{ color: var(--honey); }
 .faq-item p{ margin: 0; font-size: 0.95rem; color: var(--parchment-2); }
 
 /* ---------- Scène interactive : lieux de nidification ---------- */
-.nest-scene{ position:relative; width:100%; max-width:760px; margin: 24px auto 0; }
+.nest-scene{ position:relative; width:100%; max-width:860px; margin: 24px auto 0; }
 .nest-illustration{ width:100%; display:block; }
 .nest-hotspot{
   position:absolute;
@@ -676,21 +665,14 @@ fieldset legend{
 }
 
 .submit-row{ display:flex; flex-direction:column; align-items:center; gap:12px; margin-top: 8px; }
-/* Sans ça, l'attribut "hidden" posé en JS n'a aucun effet ici : une règle
-   d'auteur (display:flex ci-dessus) prime toujours sur le style par défaut
-   du navigateur pour [hidden], quelle que soit la spécificité — le bouton
-   "Envoyer" et le message "Envoi en cours..." restaient visibles même une
-   fois le signalement envoyé. */
+/* Sans ça, l'attribut "hidden" posé en JS n'a aucun effet : une règle d'auteur
+   (display:flex ci-dessus) prime toujours sur le style par défaut de [hidden]. */
 .submit-row[hidden]{ display:none; }
 .btn-submit{ min-width: 260px; }
 
 /* ---------- Prise en charge : remplace toute la boîte de dialogue ----------
-   Dès le clic sur "Envoyer" (chargement), puis une fois le signalement
-   envoyé (confirmation), l'objectif de la page est atteint ou en passe de
-   l'être : on cache tout le reste de la boîte (fil de discussion,
-   récapitulatif, barre de progression, bouton d'envoi...) pour ne laisser
-   que l'écran de chargement puis le message de remerciement, comme sur une
-   page de confirmation de commande. */
+   Pendant l'envoi puis à la confirmation, on cache tout le reste (fil de
+   discussion, récap, progression...) pour ne laisser que chargement puis message. */
 .report-modal.is-transition-state .section-head,
 .report-modal.is-transition-state .chat-progress,
 .report-modal.is-transition-state .chat-progress-label,
@@ -707,9 +689,8 @@ fieldset legend{
 }
 
 /* ---------- Animation de chargement : ruche d'alvéoles qui tournent ----------
-   Flotte directement sur le fond assombri de la page (.report-backdrop, déjà
-   affiché), sans carte ni bouton de fermeture : on ne peut pas quitter tant
-   que l'envoi est en cours. */
+   Flotte sur le fond déjà assombri, sans carte ni bouton de fermeture — on ne
+   peut pas quitter tant que l'envoi est en cours. */
 .loading-overlay{
   position: fixed;
   inset: 0;
@@ -753,11 +734,9 @@ fieldset legend{
   opacity: 0.22;
   animation: hive-pulse 1s ease-in-out infinite;
 }
-/* Chaque alvéole garde sa position fixe autour du cercle (rotate/translate/
-   rotate) ; c'est le conteneur .hive-loader qui tourne et "respire" en entier
-   (voir hive-spin), pendant que chaque alvéole scintille l'une après l'autre
-   (hive-pulse, décalée) — un rendu proche du repère de chargement de Claude
-   (icône qui pulse et tourne), mais avec notre propre motif en rayons. */
+/* Chaque alvéole garde sa position fixe (rotate/translate/rotate) ; c'est le
+   conteneur .hive-loader qui tourne et "respire" (hive-spin), pendant que
+   chaque alvéole scintille l'une après l'autre (hive-pulse, décalée). */
 .hive-loader span:nth-child(1){ transform: rotate(0deg)   translate(0, -24px) rotate(0deg);   animation-delay: 0s; }
 .hive-loader span:nth-child(2){ transform: rotate(60deg)  translate(0, -24px) rotate(-60deg);  animation-delay: 0.08s; }
 .hive-loader span:nth-child(3){ transform: rotate(120deg) translate(0, -24px) rotate(-120deg); animation-delay: 0.16s; }
@@ -1072,14 +1051,9 @@ footer{
 }
 
 /* ---------- Défilement guidé, écran par écran (grands écrans) ----------
-   Sur un écran suffisamment large et haut, les 5 grandes sections (hero,
-   nidification, zone, comment ça marche, en attendant l'intervention)
-   occupent chacune exactement un "écran" (100vh moins la bannière promo
-   + l'en-tête, --snap-offset), et le défilement s'aligne (snap) sur le
-   début de chaque section plutôt que de défiler librement. En dessous de
-   ce seuil (mobile/tablette, ou fenêtre basse), le comportement classique
-   (hauteur libre, pas de snap) reste inchangé : forcer 100vh sur un petit
-   écran ferait l'inverse de ce qu'on veut (contenu tronqué). */
+   Sur un écran assez large et haut, les 5 grandes sections occupent chacune
+   un "écran" (100vh - --snap-offset) avec scroll-snap. En dessous de ce seuil
+   (mobile/fenêtre basse), comportement classique : forcer 100vh tronquerait le contenu. */
 @media (min-width: 981px) and (min-height: 640px){
   html{ scroll-snap-type: y proximity; }
 
@@ -1111,7 +1085,7 @@ footer{
 
   /* L'illustration et la carte s'adaptent à la hauteur disponible plutôt
      qu'à une largeur/hauteur fixe, pour ne jamais dépasser l'écran. */
-  .nest-scene{ max-width: min(760px, 66vh); margin-top: 12px; }
+  .nest-scene{ max-width: min(980px, 86vh); margin-top: 12px; }
   .zone-leaflet-map{ height: clamp(220px, 46vh, 440px); }
 
   /* Le panneau d'onglet le plus long (FAQ) défile dans sa propre zone au
@@ -1123,13 +1097,9 @@ footer{
   }
   .info-tab-nav{ margin-bottom: 16px; }
 
-  /* "Comment ça marche" et "En attendant l'intervention" ont naturellement
-     moins de contenu que les trois autres écrans (pas d'illustration ni de
-     carte) : centrées sans plus, elles laissaient un grand vide identique
-     en haut et en bas, l'effet "flottant au milieu de rien" que l'on veut
-     éviter. On leur redonne un peu plus de respiration interne (cartes,
-     étapes, en-tête) pour que le contenu occupe mieux son écran, plutôt que
-     de laisser toute la place inoccupée s'accumuler dans une seule bande. */
+  /* "Comment ça marche" et "En attendant" ont moins de contenu que les autres
+     écrans (pas d'illustration/carte) : plus de respiration interne pour éviter
+     le grand vide haut/bas d'un contenu juste centré dans l'écran. */
   #comment-ca-marche .section-head,
   #consignes .section-head{
     margin-bottom: 34px;

@@ -1,11 +1,16 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" translate="no">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>S.O.S Abeilles Guyane — Collecte gratuite d'essaims</title>
 <meta name="description" content="Service gratuit et local de collecte et relocalisation d'essaims d'abeilles en Guyane (CACL) : Cayenne, Rémire-Montjoly, Matoury, Macouria, Montsinéry-Tonnegrande, Roura. Signalement en ligne, réponse rapide.">
 <meta name="robots" content="index, follow">
+<!-- Empêche la traduction automatique du navigateur (Chrome, Edge...) : le site
+     a déjà son propre système de langues (FR/EN/ES/PT/ZH, sélecteur en en-tête),
+     fiable et relu — la traduction automatique du navigateur ferait doublon et
+     se déclenche mal quand notre JS change dynamiquement l'attribut lang. -->
+<meta name="google" content="notranslate">
 <meta name="theme-color" content="#16281C">
 <meta property="og:title" content="S.O.S Abeilles Guyane — Collecte gratuite d'essaims">
 <meta property="og:description" content="Un apiculteur local capture et relocalise votre essaim, gratuitement, sur la zone de la CACL en Guyane.">
@@ -57,31 +62,31 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
 
-<link rel="stylesheet" href="css/styles.css?v=5">
+<link rel="stylesheet" href="css/styles.css?v=6">
 </head>
 <body>
 <canvas class="swarm-canvas" id="swarm-canvas" aria-hidden="true"></canvas>
 
-<div class="promo-bar" role="note" aria-label="Collecte gratuite et sans danger pour vous et les abeilles">
+<div class="promo-bar" role="note" data-i18n-aria-label="banner.text" aria-label="Collecte gratuite et sans danger pour vous et les abeilles">
   <div class="promo-track" aria-hidden="true">
     <div class="promo-group">
-      <span class="promo-item">Collecte gratuite &amp; sans danger pour vous et les abeilles</span>
+      <span class="promo-item" data-i18n="banner.text">Collecte gratuite &amp; sans danger pour vous et les abeilles</span>
       <span class="promo-dot">•</span>
-      <span class="promo-item">Collecte gratuite &amp; sans danger pour vous et les abeilles</span>
+      <span class="promo-item" data-i18n="banner.text">Collecte gratuite &amp; sans danger pour vous et les abeilles</span>
       <span class="promo-dot">•</span>
-      <span class="promo-item">Collecte gratuite &amp; sans danger pour vous et les abeilles</span>
+      <span class="promo-item" data-i18n="banner.text">Collecte gratuite &amp; sans danger pour vous et les abeilles</span>
       <span class="promo-dot">•</span>
-      <span class="promo-item">Collecte gratuite &amp; sans danger pour vous et les abeilles</span>
+      <span class="promo-item" data-i18n="banner.text">Collecte gratuite &amp; sans danger pour vous et les abeilles</span>
       <span class="promo-dot">•</span>
     </div>
     <div class="promo-group">
-      <span class="promo-item">Collecte gratuite &amp; sans danger pour vous et les abeilles</span>
+      <span class="promo-item" data-i18n="banner.text">Collecte gratuite &amp; sans danger pour vous et les abeilles</span>
       <span class="promo-dot">•</span>
-      <span class="promo-item">Collecte gratuite &amp; sans danger pour vous et les abeilles</span>
+      <span class="promo-item" data-i18n="banner.text">Collecte gratuite &amp; sans danger pour vous et les abeilles</span>
       <span class="promo-dot">•</span>
-      <span class="promo-item">Collecte gratuite &amp; sans danger pour vous et les abeilles</span>
+      <span class="promo-item" data-i18n="banner.text">Collecte gratuite &amp; sans danger pour vous et les abeilles</span>
       <span class="promo-dot">•</span>
-      <span class="promo-item">Collecte gratuite &amp; sans danger pour vous et les abeilles</span>
+      <span class="promo-item" data-i18n="banner.text">Collecte gratuite &amp; sans danger pour vous et les abeilles</span>
       <span class="promo-dot">•</span>
     </div>
   </div>
@@ -114,6 +119,7 @@
           <li><button type="button" class="lang-option" data-lang="en">English</button></li>
           <li><button type="button" class="lang-option" data-lang="es">Español</button></li>
           <li><button type="button" class="lang-option" data-lang="pt">Português</button></li>
+          <li><button type="button" class="lang-option" data-lang="zh">中文</button></li>
         </ul>
       </div>
     </div>
@@ -594,7 +600,7 @@
   </div>
 </footer>
 
-<script src="js/script.js?v=7" defer></script>
+<script src="js/script.js?v=8" defer></script>
 
 </body>
 </html>
