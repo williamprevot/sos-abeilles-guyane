@@ -1419,15 +1419,22 @@
             trackDockTargets();
           }
       
-          // Plafond bas de la nuée : jamais plus bas que le titre "En attendant
-          // l'intervention", recalculé en continu puisqu'il se déplace avec le
-          // défilement. Une fois ce titre remonté au-dessus de l'écran, le plafond
-          // devient négatif et la nuée entière se retrouve hors champ (invisible),
-          // ce qui règle aussi le cas où elle ne devait plus du tout apparaître.
-          const ceilingTitle = document.querySelector("#consignes h2");
-          if(ceilingTitle){
+          // Plafond bas de la nuée : jamais plus bas que le haut de l'écran
+          // "En attendant l'intervention", recalculé en continu puisqu'il se
+          // déplace avec le défilement. On s'appuie sur le DÉBUT de la section
+          // (pas sur son titre, posté plus bas dans l'écran une fois cette
+          // section alignée par le scroll-snap) : sinon, tant qu'on reste sur
+          // cet écran, le titre reste visible et le plafond reste largement
+          // positif, ce qui laisse la nuée flotter en permanence au-dessus du
+          // texte de lecture — exactement l'effet qu'on veut éviter. Ancrée sur
+          // le haut de la section, le plafond redescend sous le bandeau d'en-tête
+          // dès que cet écran est en place, et la nuée disparaît (visuellement
+          // masquée derrière l'en-tête, au-dessus dans l'empilement) pour toute
+          // la durée de la lecture.
+          const ceilingSection = document.getElementById("consignes");
+          if(ceilingSection){
             (function updateBeeCeiling(){
-              beeCeilingY = ceilingTitle.getBoundingClientRect().top - 10;
+              beeCeilingY = ceilingSection.getBoundingClientRect().top - 10;
               requestAnimationFrame(updateBeeCeiling);
             })();
           }
