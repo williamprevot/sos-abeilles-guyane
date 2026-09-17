@@ -671,6 +671,12 @@ fieldset legend{
 }
 
 .submit-row{ display:flex; flex-direction:column; align-items:center; gap:12px; margin-top: 8px; }
+/* Sans ça, l'attribut "hidden" posé en JS n'a aucun effet ici : une règle
+   d'auteur (display:flex ci-dessus) prime toujours sur le style par défaut
+   du navigateur pour [hidden], quelle que soit la spécificité — le bouton
+   "Envoyer" et le message "Envoi en cours..." restaient visibles même une
+   fois le signalement envoyé. */
+.submit-row[hidden]{ display:none; }
 .btn-submit{ min-width: 260px; }
 
 .spinner{
@@ -688,22 +694,49 @@ fieldset legend{
   .spinner{ animation: none; }
 }
 
+/* ---------- Écran de confirmation : remplace toute la boîte de dialogue ----------
+   Une fois le signalement envoyé, l'objectif de la page est atteint : on
+   cache tout le reste de la boîte (fil de discussion, récapitulatif,
+   barre de progression, bouton d'envoi...) pour ne laisser que ce message
+   de remerciement, comme sur une page de confirmation de commande. */
+.report-modal.is-success-state .section-head,
+.report-modal.is-success-state .chat-progress,
+.report-modal.is-success-state .chat-progress-label,
+.report-modal.is-success-state .chat-log,
+.report-modal.is-success-state .recap-card,
+.report-modal.is-success-state .privacy-note{
+  display: none;
+}
+.report-modal.is-success-state form{
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
 .success-screen{
   text-align:center;
-  padding: 30px 10px 10px;
+  padding: 46px 12px 34px;
+  animation: success-in 0.5s ease both;
 }
 .success-icon{
-  width:56px; height:56px;
-  margin: 0 auto 18px;
+  width:72px; height:72px;
+  margin: 0 auto 24px;
   border-radius:50%;
   background: var(--honey);
   color: var(--forest);
-  font-size:1.8rem;
+  font-size:2.2rem;
   font-weight:700;
   display:flex; align-items:center; justify-content:center;
 }
-.success-screen h3{ color: var(--parchment); font-size:1.3rem; margin-bottom:10px; }
-.success-screen p{ color: var(--parchment-2); max-width:42ch; margin:0 auto 22px; }
+.success-screen h3{ color: var(--parchment); font-size:1.6rem; margin-bottom:12px; }
+.success-screen p{ color: var(--parchment-2); font-size:1.02rem; max-width:38ch; margin:0 auto; }
+@keyframes success-in{
+  from{ opacity:0; transform: translateY(6px); }
+  to{ opacity:1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce){
+  .success-screen{ animation:none; }
+}
 
 .btn-submit{
   background: var(--honey);

@@ -1091,6 +1091,7 @@
    
        const successScreen = document.getElementById("success-screen");
        if(!successScreen.hidden){
+         reportModal.classList.remove("is-success-state");
          successScreen.hidden = true;
          document.getElementById("submit-row").hidden = false;
          submitBtn.disabled = false;
@@ -1101,12 +1102,11 @@
          showTypingThenStep(1);
        }
      }
-   
+
      document.querySelectorAll(".open-report").forEach((btn) => {
        btn.addEventListener("click", openReportModal);
      });
      reportModalClose.addEventListener("click", closeReportModal);
-     document.getElementById("success-close-btn").addEventListener("click", closeReportModal);
      reportBackdrop.addEventListener("click", closeReportModal);
      document.addEventListener("keydown", (e) => {
        if(e.key === "Escape" && !reportModal.hidden){ closeReportModal(); }
@@ -1326,6 +1326,11 @@
          document.getElementById("submit-row").hidden = true;
          const successScreen = document.getElementById("success-screen");
          successScreen.hidden = false;
+         // La demande est envoyée, l'objectif de la page est atteint : on
+         // remplace tout le contenu de la boîte de dialogue (fil de discussion,
+         // récapitulatif, barre de progression...) par le seul message de
+         // remerciement, plutôt que de l'empiler avec ce qui précède.
+         reportModal.classList.add("is-success-state");
          form.reset();
        }catch(err){
          console.error(err);
