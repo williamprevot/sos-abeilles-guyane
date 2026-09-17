@@ -236,11 +236,7 @@
     <div class="steps">
       <article class="step">
         <div class="step-num">1</div>
-        <h3>
-          <button type="button" class="step-link open-report">
-            Vous signalez
-          </button>
-        </h3>
+        <h3>Vous signalez</h3>
         <p>
           Remplissez une description complète de l'essaim grâce à notre chat
           interactif.
@@ -347,6 +343,12 @@
 </section>
 
 <div class="modal-backdrop" id="report-backdrop" hidden></div>
+<div class="loading-overlay" id="loading-overlay" hidden aria-live="polite" aria-label="Envoi du signalement en cours">
+  <div class="hive-loader" aria-hidden="true">
+    <span></span><span></span><span></span><span></span><span></span><span></span>
+  </div>
+  <p>Envoi de votre signalement...</p>
+</div>
 <div class="report-modal" id="report-modal" hidden role="dialog" aria-modal="true" aria-labelledby="report-modal-title">
   <button type="button" class="modal-close" id="report-modal-close" aria-label="Fermer">&times;</button>
   <div class="section-head">
@@ -497,13 +499,6 @@
           <div class="submit-row" id="submit-row">
             <button type="submit" class="btn-submit" id="submit-btn">Envoyer le signalement</button>
             <span class="form-status" id="form-status"></span>
-          </div>
-
-          <div class="loading-screen" id="loading-screen" hidden>
-            <div class="hive-loader" aria-hidden="true">
-              <span></span><span></span><span></span><span></span><span></span><span></span>
-            </div>
-            <p>Envoi de votre signalement...</p>
           </div>
 
           <div class="success-screen" id="success-screen" hidden>

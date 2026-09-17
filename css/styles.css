@@ -399,14 +399,6 @@ header nav a:hover{ color: var(--honey); }
   margin-bottom: 10px;
 }
 .step h3{ font-size:1.15rem; margin-bottom:8px; }
-.step-link{
-  background:none; border:none; padding:0;
-  font: inherit; color: inherit;
-  cursor: pointer;
-  text-decoration: underline dotted rgba(246,238,218,0.4);
-  text-underline-offset: 4px;
-}
-.step-link:hover{ color: var(--honey); text-decoration-color: var(--honey); }
 .step p{ font-size:0.95rem; color: var(--parchment-2); margin-bottom:0; }
 
 /* ---------- Consignes ---------- */
@@ -538,8 +530,8 @@ header nav a:hover{ color: var(--honey); }
 .modal-backdrop{
   position: fixed;
   inset: 0;
-  background: rgba(8,14,9,0.65);
-  backdrop-filter: blur(3px);
+  background: rgba(8,14,9,0.55);
+  backdrop-filter: blur(7px);
   z-index: 60;
 }
 .modal-backdrop[hidden]{ display:none; }
@@ -559,6 +551,14 @@ header nav a:hover{ color: var(--honey); }
   box-shadow: 0 24px 70px rgba(0,0,0,0.5);
   padding: 44px 40px 36px;
   z-index: 61;
+  animation: modal-pop-in 0.22s ease both;
+}
+@keyframes modal-pop-in{
+  from{ opacity:0; }
+  to{ opacity:1; }
+}
+@media (prefers-reduced-motion: reduce){
+  .report-modal{ animation:none; }
 }
 .report-modal[hidden]{ display:none; }
 .report-modal .section-head h2{ color: var(--parchment); }
@@ -701,24 +701,42 @@ fieldset legend{
   padding: 0;
 }
 
-/* ---------- Animation de chargement : ruche d'alvéoles qui tournent ---------- */
-.loading-screen{
-  text-align:center;
-  padding: 54px 12px;
-  animation: success-in 0.4s ease both;
+/* ---------- Animation de chargement : ruche d'alvéoles qui tournent ----------
+   Flotte directement sur le fond assombri de la page (.report-backdrop, déjà
+   affiché), sans carte ni bouton de fermeture : on ne peut pas quitter tant
+   que l'envoi est en cours. */
+.loading-overlay{
+  position: fixed;
+  inset: 0;
+  z-index: 62;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  animation: overlay-fade-in 0.25s ease both;
 }
-.loading-screen p{
+.loading-overlay[hidden]{ display:none; }
+.loading-overlay p{
   color: var(--parchment-2);
   font-family: 'IBM Plex Mono', monospace;
   font-size: 0.85rem;
   letter-spacing: 0.03em;
-  margin: 0;
+  margin: 22px 0 0;
+}
+@keyframes overlay-fade-in{
+  from{ opacity:0; }
+  to{ opacity:1; }
+}
+@media (prefers-reduced-motion: reduce){
+  .loading-overlay{ animation:none; }
 }
 .hive-loader{
   position: relative;
   width: 64px; height: 64px;
   margin: 0 auto 26px;
-  animation: hive-spin 3.6s linear infinite;
+  animation: hive-spin 2.2s cubic-bezier(0.45,0,0.55,1) infinite;
+  filter: drop-shadow(0 0 10px rgba(217,160,44,0.45));
 }
 .hive-loader span{
   position: absolute;
@@ -728,22 +746,30 @@ fieldset legend{
   clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
   background: var(--honey);
   opacity: 0.22;
-  animation: hive-pulse 1.2s ease-in-out infinite;
+  animation: hive-pulse 1s ease-in-out infinite;
 }
+/* Chaque alvéole garde sa position fixe autour du cercle (rotate/translate/
+   rotate) ; c'est le conteneur .hive-loader qui tourne et "respire" en entier
+   (voir hive-spin), pendant que chaque alvéole scintille l'une après l'autre
+   (hive-pulse, décalée) — un rendu proche du repère de chargement de Claude
+   (icône qui pulse et tourne), mais avec notre propre motif en rayons. */
 .hive-loader span:nth-child(1){ transform: rotate(0deg)   translate(0, -24px) rotate(0deg);   animation-delay: 0s; }
-.hive-loader span:nth-child(2){ transform: rotate(60deg)  translate(0, -24px) rotate(-60deg);  animation-delay: 0.1s; }
-.hive-loader span:nth-child(3){ transform: rotate(120deg) translate(0, -24px) rotate(-120deg); animation-delay: 0.2s; }
-.hive-loader span:nth-child(4){ transform: rotate(180deg) translate(0, -24px) rotate(-180deg); animation-delay: 0.3s; }
-.hive-loader span:nth-child(5){ transform: rotate(240deg) translate(0, -24px) rotate(-240deg); animation-delay: 0.4s; }
-.hive-loader span:nth-child(6){ transform: rotate(300deg) translate(0, -24px) rotate(-300deg); animation-delay: 0.5s; }
-@keyframes hive-spin{ to{ transform: rotate(360deg); } }
+.hive-loader span:nth-child(2){ transform: rotate(60deg)  translate(0, -24px) rotate(-60deg);  animation-delay: 0.08s; }
+.hive-loader span:nth-child(3){ transform: rotate(120deg) translate(0, -24px) rotate(-120deg); animation-delay: 0.16s; }
+.hive-loader span:nth-child(4){ transform: rotate(180deg) translate(0, -24px) rotate(-180deg); animation-delay: 0.24s; }
+.hive-loader span:nth-child(5){ transform: rotate(240deg) translate(0, -24px) rotate(-240deg); animation-delay: 0.32s; }
+.hive-loader span:nth-child(6){ transform: rotate(300deg) translate(0, -24px) rotate(-300deg); animation-delay: 0.4s; }
+@keyframes hive-spin{
+  0%{ transform: rotate(0deg) scale(0.9); }
+  50%{ transform: rotate(180deg) scale(1.08); }
+  100%{ transform: rotate(360deg) scale(0.9); }
+}
 @keyframes hive-pulse{
   0%, 100%{ opacity: 0.22; }
   50%{ opacity: 1; }
 }
 @media (prefers-reduced-motion: reduce){
-  .loading-screen{ animation:none; }
-  .hive-loader{ animation:none; }
+  .hive-loader{ animation:none; filter:none; }
   .hive-loader span{ animation:none; opacity:0.7; }
 }
 
@@ -760,7 +786,7 @@ fieldset legend{
   line-height: 1;
   animation: rocket-launch 0.6s cubic-bezier(.22,.85,.32,1.2) both;
 }
-.success-screen h3{ color: var(--parchment); font-size:1.6rem; margin-bottom:12px; }
+.success-screen h3{ color: var(--honey); font-size:1.6rem; margin-bottom:12px; }
 .success-screen p{ color: var(--parchment-2); font-size:1.02rem; max-width:38ch; margin:0 auto; }
 @keyframes success-in{
   from{ opacity:0; transform: translateY(6px); }
