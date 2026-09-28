@@ -8,6 +8,13 @@ const TEMPLATE_CONFIRM     = "template_b3x7ci3";   // Confirmation client, immé
 // sont configurés dans le champ "To Email" du template EmailJS lui-même.
 emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
 
+/* Mesure d'audience (Microsoft Clarity, via js/consent.js) : n'envoie RIEN
+   tant que le visiteur n'a pas accepté. Seuls des noms d'étapes sont transmis,
+   jamais le contenu du formulaire. */
+function sosTrack(name){
+  if(window.SOSConsent && typeof window.SOSConsent.track === "function"){ window.SOSConsent.track(name); }
+}
+
 /* =========================================================
    SYSTÈME MULTILINGUE (FR / EN / ES / PT)
    - Le français reste la langue de référence : toutes les clés
@@ -1647,6 +1654,7 @@ function getInitialLang(){
      steps.forEach((s) => { s.hidden = Number(s.dataset.step) !== n; });
      currentStep = n;
      updateProgress(n);
+     if(n > 1){ sosTrack("signalement_etape_" + n); }
      if(n === 11){ buildRecap(); }
      const activeStep = steps[n-1];
      const focusable = activeStep.querySelector("input:not([type=hidden]):not(.visually-hidden), textarea");
@@ -1867,6 +1875,7 @@ function openReportModal(){
   reportModal.hidden = false;
   reportBackdrop.hidden = false;
   syncBodyScrollLock();
+  sosTrack("signalement_ouvert");
 }
 function closeReportModal(){
   // Un envoi est en cours (chargement plein écran, sans croix ni carte
@@ -2135,6 +2144,7 @@ form.addEventListener("submit", async function(e){
     const successScreen = document.getElementById("success-screen");
     successScreen.hidden = false;
     form.reset();
+    sosTrack("signalement_envoye");
   }catch(err){
     console.error(err);
     // En cas d'échec, on masque l'animation de chargement, on refait
