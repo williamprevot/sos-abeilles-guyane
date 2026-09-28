@@ -1197,3 +1197,17 @@ footer{
   padding: 9px 16px; font-family: 'Work Sans', sans-serif; font-weight: 600; font-size: 0.9rem; cursor: pointer;
 }
 .legal-content .consent-manage-btn:hover{ background: var(--honey); color: var(--forest); }
+
+/* ---------- Pied de page : logo à gauche, liens superposés à droite (alignés à gauche) ---------- */
+.footer-main{
+  display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start;
+  gap: 16px 32px; padding: 30px 0 22px;
+}
+.footer-main .footer-brand{ flex: 0 1 auto; }
+.footer-main .footer-links{
+  flex-direction: column; align-items: flex-start; justify-content: flex-start;
+  gap: 6px; padding: 0; margin: 8px clamp(16px, 8vw, 120px) 0 auto; text-align: left;
+}
+.footer-main .footer-link{ color: #FFFFFF; line-height: 1.5; }
+.footer-main .footer-link:hover{ color: var(--honey); }
+.footer-bottom p{ max-width: none; } /* centre vraiment le copyright */

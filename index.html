@@ -153,7 +153,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
 
-<link rel="stylesheet" href="css/styles.css?v=12">
+<link rel="stylesheet" href="css/styles.css?v=13">
 </head>
 <body>
 <canvas class="swarm-canvas" id="swarm-canvas" aria-hidden="true"></canvas>
@@ -683,12 +683,20 @@
 </div>
 
 <footer>
-  <div class="wrap footer-links">
-    <button type="button" class="footer-link open-about" data-i18n="about.title">À propos de nous</button>
-    <span class="footer-sep" aria-hidden="true">•</span>
-    <button type="button" class="footer-link open-privacy" data-i18n="privacy.linkLabel">Politique de confidentialité</button>
-    <span class="footer-sep" aria-hidden="true">•</span>
-    <button type="button" class="footer-link" data-consent-open data-consent-label>Gérer mes cookies</button>
+  <div class="wrap footer-main">
+    <div class="brand footer-brand">
+      <svg class="brand-mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M20,2 L27.8,6.5 L27.8,15.5 L20,20 L12.2,15.5 L12.2,6.5 Z" stroke="#D9A02C" stroke-width="1.5"/>
+        <path d="M13,15 L20.8,19.5 L20.8,28.5 L13,33 L5.2,28.5 L5.2,19.5 Z" stroke="#D9A02C" stroke-width="1.5"/>
+        <path d="M27,15 L34.8,19.5 L34.8,28.5 L27,33 L19.2,28.5 L19.2,19.5 Z" stroke="#D9A02C" stroke-width="1.5"/>
+      </svg>
+      <div class="brand-name">S.O.S <span>Abeilles</span> Guyane</div>
+    </div>
+    <div class="footer-links">
+      <button type="button" class="footer-link open-about" data-i18n="about.title">À propos de nous</button>
+      <button type="button" class="footer-link open-privacy" data-i18n="privacy.linkLabel">Politique de confidentialité</button>
+      <button type="button" class="footer-link" data-consent-open data-consent-label>Gérer mes cookies</button>
+    </div>
   </div>
 
   <div class="wrap footer-bottom">
