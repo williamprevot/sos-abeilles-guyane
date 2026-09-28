@@ -1128,3 +1128,86 @@ footer{
   #consignes .info-list li{ padding: 15px 20px; font-size: 1rem; }
   #consignes .faq-item{ padding: 15px 20px; }
 }
+/* =====================================================================
+   Consentement aux cookies (RGPD / CNIL) — js/consent.js
+   ===================================================================== */
+.sos-consent{
+  position: fixed; left: 16px; right: 16px; bottom: 16px;
+  z-index: 58; /* sous les boîtes de dialogue du site (60+) */
+  display: flex; justify-content: flex-start; pointer-events: none;
+}
+.sos-consent[hidden]{ display:none; }
+.sosc-card{
+  pointer-events: auto; width: 100%; max-width: 480px;
+  max-height: calc(100vh - 32px); max-height: calc(100dvh - 32px); overflow: auto;
+  background: rgba(22,40,28,0.94);
+  backdrop-filter: blur(18px) saturate(150%); -webkit-backdrop-filter: blur(18px) saturate(150%);
+  color: var(--parchment);
+  border: 1px solid rgba(217,160,44,0.35); border-radius: 10px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(246,238,218,0.06);
+  padding: 22px 22px 14px;
+}
+@media (min-width: 640px){
+  .sos-consent{ left: 24px; right: auto; bottom: 24px; }
+  .sosc-card{ width: 460px; }
+}
+.sosc-title{ font-family: 'Zilla Slab', serif; color: var(--honey); font-size: 1.3rem; line-height: 1.2; margin: 0 0 8px; }
+.sosc-title:focus{ outline: none; }
+.sosc-desc{ font-size: 0.88rem; line-height: 1.55; color: var(--parchment-2); margin: 0; max-width: none; }
+.sosc-policy{ margin: 10px 0 0; font-size: 0.88rem; }
+.sosc-policy a{ color: var(--honey); }
+.sosc-actions{ display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+/* « Refuser » et « Accepter » : style strictement identique (CNIL) */
+.sosc-btn{
+  font-family: 'Work Sans', sans-serif; font-size: 0.95rem; font-weight: 600;
+  padding: 12px 14px; border-radius: var(--radius);
+  border: 1.5px solid var(--honey); background: transparent; color: var(--parchment);
+  cursor: pointer; transition: background .15s ease, color .15s ease;
+}
+.sosc-btn:hover{ background: var(--honey); color: var(--forest); }
+.sosc-btn:focus-visible,.sosc-link:focus-visible,.sosc-switch:focus-visible,.footer-link:focus-visible{ outline: 2px solid var(--honey); outline-offset: 2px; }
+.sosc-link{
+  display: block; margin: 10px auto 0; padding: 6px; background: none; border: 0;
+  font-family: 'Work Sans', sans-serif; font-size: 0.85rem; color: var(--parchment-2);
+  text-decoration: underline; text-underline-offset: 3px; cursor: pointer;
+}
+.sosc-link:hover{ color: var(--honey); }
+.sosc-row{ display: flex; gap: 16px; align-items: flex-start; justify-content: space-between; padding: 12px 0; border-top: 1px solid rgba(217,160,44,0.2); }
+.sosc-row h3{ font-family: 'Work Sans', sans-serif; font-size: 0.95rem; font-weight: 600; color: var(--parchment); margin: 0; }
+.sosc-row label{ cursor: pointer; }
+.sosc-row p{ font-size: 0.8rem; line-height: 1.5; color: var(--parchment-2); opacity: .85; margin: 4px 0 0; max-width: none; }
+.sosc-always{ flex: none; font-size: 0.78rem; font-weight: 600; color: var(--honey); white-space: nowrap; margin-top: 2px; }
+.sosc-switch{
+  flex: none; appearance: none; -webkit-appearance: none; margin: 0; cursor: pointer;
+  width: 44px; height: 26px; border-radius: 999px; background: rgba(246,238,218,0.2); position: relative;
+  transition: background .2s ease;
+}
+.sosc-switch::after{
+  content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%;
+  background: var(--parchment); transition: transform .2s ease, background .2s ease;
+}
+.sosc-switch:checked{ background: var(--honey); }
+.sosc-switch:checked::after{ transform: translateX(18px); background: var(--forest); }
+@media (prefers-reduced-motion: reduce){ .sosc-btn,.sosc-switch,.sosc-switch::after{ transition: none; } }
+@media print{ .sos-consent{ display: none !important; } }
+/* bouton « Gérer mes cookies » dans la politique de confidentialité */
+.legal-content .consent-manage-btn{
+  margin-top: 4px; background: transparent; color: var(--honey);
+  border: 1px solid var(--honey); border-radius: var(--radius);
+  padding: 9px 16px; font-family: 'Work Sans', sans-serif; font-weight: 600; font-size: 0.9rem; cursor: pointer;
+}
+.legal-content .consent-manage-btn:hover{ background: var(--honey); color: var(--forest); }
+
+/* ---------- Pied de page : logo à gauche, liens superposés à droite (alignés à gauche) ---------- */
+.footer-main{
+  display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start;
+  gap: 16px 32px; padding: 30px 0 22px;
+}
+.footer-main .footer-brand{ flex: 0 1 auto; }
+.footer-main .footer-links{
+  flex-direction: column; align-items: flex-start; justify-content: flex-start;
+  gap: 6px; padding: 0; margin: 8px clamp(16px, 8vw, 120px) 0 auto; text-align: left;
+}
+.footer-main .footer-link{ color: #FFFFFF; line-height: 1.5; }
+.footer-main .footer-link:hover{ color: var(--honey); }
+.footer-bottom p{ max-width: none; } /* centre vraiment le copyright */

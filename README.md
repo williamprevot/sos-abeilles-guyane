@@ -13,6 +13,8 @@ interactive, FAQ, animation d'essaim en canvas.
 index.html        — structure de la page uniquement
 css/styles.css     — tous les styles
 js/script.js       — toute la logique (chatbot, carte, animation, formulaire)
+js/consent.js      — bandeau cookies (RGPD) + mesure d'audience Clarity
+confidentialite.html — politique de confidentialité (page autonome)
 robots.txt         — autorise l'indexation par les moteurs de recherche
 sitemap.xml        — plan du site pour le référencement
 ```
@@ -65,6 +67,34 @@ deux réglages privés, jamais exposés au navigateur.
 Project configuration → Forms → Form notifications → Add notification →
 Email notification, une fois par destinataire (apiculteur, puis dev) — voir
 le guide de configuration pour les adresses exactes.
+
+## Statistiques de visite (Microsoft Clarity) et RGPD
+
+Le site mesure les visites avec **Microsoft Clarity** (gratuit) : visites, défilement,
+cartes de chaleur, relectures de visites, et étapes du signalement.
+
+**Rien n'est chargé sans l'accord du visiteur** (RGPD / CNIL) : un bandeau en 5 langues
+propose « Refuser » et « Accepter » avec le même poids visuel, plus « Personnaliser ».
+Le choix est gardé 6 mois (recommandation CNIL), puis redemandé. « Gérer mes cookies »
+dans le pied de page permet de changer d'avis à tout moment.
+
+Fichiers : `js/consent.js` (bandeau + chargement de Clarity), fin de `css/styles.css`,
+politique mise à jour dans `index.html` (boîte de dialogue) et `confidentialite.html`,
+formulaire de signalement masqué (`data-clarity-mask="True"`).
+
+### Activer Clarity
+1. clarity.microsoft.com → menu des projets → **Nouveau projet** : `S.O.S Abeilles Guyane`,
+   URL `https://sosabeillesguyane.netlify.app`. Ne PAS coller le code proposé.
+2. Paramètres → Vue d'ensemble → copier l'**ID de projet**.
+3. Dans `js/consent.js`, remplacer `COLLEZ_VOTRE_ID_CLARITY` par cet ID, puis publier.
+4. Paramètres → Configuration → **Cookies : désactivé** ; Masque en cours → **Équilibré**.
+
+### Événements envoyés (Clarity → Filtres → Événements personnalisés)
+`signalement_ouvert`, `signalement_etape_2` à `signalement_etape_11`, `signalement_envoye`,
+`clic_telephone`, `clic_email`. Seuls les visiteurs qui acceptent sont comptés.
+
+Si vous ajoutez un autre outil de suivi : l'ajouter au bandeau et à la politique, et
+augmenter `CONSENT_VERSION` dans `js/consent.js` pour redemander l'accord.
 
 ## Déploiement
 
