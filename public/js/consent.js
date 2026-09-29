@@ -17,6 +17,15 @@
 (function(){
   "use strict";
 
+  /* L'espace apiculteur (/apiculteur) ne contient que des données personnelles
+     d'habitants : aucune bannière et AUCUNE mesure d'audience n'y est chargée.
+     Même chose pour les liens d'invitation / de mot de passe reçus par email. */
+  if (/^\/apiculteur(\/|$)/.test(location.pathname) ||
+      /(^#|&)(access_token|error_description)=/.test(location.hash)) {
+    window.SOSConsent = { open: function(){}, track: function(){}, hasAnalyticsConsent: function(){ return false; } };
+    return;
+  }
+
   /* 1) Collez ici l'identifiant du projet Clarity de CE site :
         clarity.microsoft.com → projet « S.O.S Abeilles Guyane » → Paramètres
         → Vue d'ensemble → ID de projet (une dizaine de lettres/chiffres).

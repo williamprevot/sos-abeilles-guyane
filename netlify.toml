@@ -1,0 +1,30 @@
+# Netlify construit le site à chaque push (plus de fichiers statiques bruts).
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Espace apiculteur : application React (toutes les adresses /apiculteur/...).
+[[redirects]]
+  from = "/apiculteur/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/apiculteur"
+  to = "/index.html"
+  status = 200
+
+# L'espace apiculteur ne doit jamais être indexé par les moteurs de recherche.
+[[headers]]
+  for = "/apiculteur"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/apiculteur/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"

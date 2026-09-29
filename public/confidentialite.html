@@ -62,22 +62,31 @@
       <li>L'emplacement, l'ancienneté et l'urgence que vous indiquez</li>
       <li>Une photo de l'essaim, si vous en joignez une</li>
       <li>Un message libre, si vous en ajoutez un</li>
+      <li>Votre position GPS, seulement si vous appuyez sur « Utiliser ma position » (facultatif)</li>
     </ul>
 
     <h3>Pourquoi ?</h3>
-    <p>Uniquement pour organiser la collecte : vous identifier, vous localiser, évaluer l'urgence, et permettre à l'apiculteur de vous contacter pour convenir d'un horaire.</p>
+    <p>Uniquement pour organiser la collecte : vous identifier, vous localiser, évaluer l'urgence, permettre à l'apiculteur de vous contacter pour convenir d'un horaire, puis suivre l'intervention jusqu'à la récupération de l'essaim. Nous en tirons aussi des statistiques anonymes (nombre d'essaims sauvés par commune), sans aucune donnée personnelle.</p>
 
     <h3>Qui y a accès ?</h3>
-    <p>Seuls l'apiculteur et le développeur du site (maintenance technique) accèdent à votre signalement. Vos données ne sont ni vendues, ni partagées à des fins commerciales. Deux prestataires les traitent en notre nom, uniquement pour l'acheminer : <span class="info-key">Netlify</span> (hébergement) et <span class="info-key">EmailJS</span> (envoi des emails), tous deux engagés contractuellement à un niveau de protection conforme au RGPD. Si vous acceptez la mesure d'audience, <span class="info-key">Microsoft</span> (Clarity) reçoit aussi des données de navigation, jamais le contenu du formulaire.</p>
+    <p>Seuls l'apiculteur et les membres de son équipe, chacun avec un compte personnel protégé par mot de passe, ainsi que le développeur du site (maintenance technique), accèdent à votre signalement. Vos données ne sont ni vendues, ni partagées à des fins commerciales. Votre photo reste dans un espace privé : elle n'est jamais publiée.</p>
+    <p>Quelques prestataires les traitent en notre nom, uniquement pour faire fonctionner le service, tous engagés contractuellement à respecter le RGPD :</p>
+    <ul>
+      <li><span class="info-key">Supabase</span> : base de données et stockage des photos, sur des serveurs situés dans l'Union européenne ;</li>
+      <li><span class="info-key">Netlify</span> : hébergement du site ;</li>
+      <li><span class="info-key">EmailJS</span> : envoi des emails de confirmation et d'alerte ;</li>
+      <li><span class="info-key">MapTiler</span> : cartes, et placement d'une adresse sur la carte de l'équipe (seule l'adresse de l'essaim est transmise, jamais votre nom).</li>
+    </ul>
+    <p>Si vous acceptez la mesure d'audience, <span class="info-key">Microsoft</span> (Clarity) reçoit aussi des données de navigation, jamais le contenu du formulaire.</p>
 
     <h3>Combien de temps sont-elles conservées ?</h3>
-    <p>12 mois après l'intervention, puis suppression, sauf obligation légale contraire.</p>
+    <p>Jusqu'à 12 mois après la clôture de votre signalement (essaim récupéré ou signalement sans suite). Ensuite, votre nom, téléphone, email, adresse, position, photo et message sont effacés. Ne restent que la commune, les dates et le résultat, qui ne permettent plus de vous identifier, pour les statistiques.</p>
 
     <h3>Vos droits</h3>
     <p>Vous disposez d'un droit d'accès, de rectification, d'effacement, de limitation, d'opposition et de portabilité sur vos données. Pour l'exercer, utilisez le formulaire <span class="info-key">« Signaler un essaim »</span> sur la page d'accueil et indiquez votre demande dans le champ message — nous vous répondrons sous 30 jours. Vous pouvez aussi introduire une réclamation auprès de la <a href="https://www.cnil.fr" target="_blank" rel="noopener">CNIL</a>.</p>
 
     <h3>Mesure d'audience (seulement avec votre accord)</h3>
-    <p>Si vous cliquez sur « Accepter » dans le bandeau, nous utilisons <span class="info-key">Microsoft Clarity</span> pour comprendre comment le site est utilisé et l'améliorer : pages vues, défilement, clics et mouvements de souris, type d'appareil, région approximative. Le formulaire de signalement est entièrement masqué : Clarity ne voit jamais ce que vous y écrivez. Aucun usage publicitaire.</p>
+    <p>Si vous cliquez sur « Accepter » dans le bandeau, nous utilisons <span class="info-key">Microsoft Clarity</span> pour comprendre comment le site est utilisé et l'améliorer : pages vues, défilement, clics et mouvements de souris, type d'appareil, région approximative. Le formulaire de signalement est entièrement masqué : Clarity ne voit jamais ce que vous y écrivez. L'espace réservé à l'équipe n'est jamais mesuré. Aucun usage publicitaire.</p>
     <p>Ces données sont hébergées par Microsoft, notamment aux États-Unis. Ce transfert est encadré par le <span class="info-key">Data Privacy Framework</span> UE–États-Unis, auquel Microsoft adhère. Durées : enregistrements de visites 30 jours, statistiques 9 mois (fixées par Microsoft). Votre choix est gardé 6 mois.</p>
 
     <h3>Cookies et traceurs</h3>
@@ -113,6 +122,6 @@
   </div>
 </footer>
 
-<script src="js/consent.js?v=1" defer></script>
+<script src="js/consent.js?v=3" defer></script>
 </body>
 </html>
