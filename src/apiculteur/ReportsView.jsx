@@ -3,6 +3,7 @@ import { Link } from './nav.jsx';
 import { photoUrls } from './api.js';
 import { STATUSES, StatusBadge, urgencyLevel, urgencyLabel, timeAgo, telHref, displayName } from './constants.jsx';
 import { COMMUNES } from '../lib/communes.js';
+import { Icon } from './icons.jsx';
 
 const FILTERS = [
   { id: 'actifs', label: 'À traiter', test: (r) => r.status === 'nouveau' || r.status === 'planifie' },
@@ -110,6 +111,7 @@ export default function ReportsView({ reports, staff, isAdmin, search, expiredCo
       <div className="bk-toolbar">
         <label className="bk-field bk-field-inline bk-search">
           <span className="visually-hidden">Rechercher</span>
+          <Icon name="search" size={17} className="bk-search-icon" />
           <input type="search" placeholder="Nom, adresse, téléphone, référence…" value={q} onChange={(e) => setQ(e.target.value)} />
         </label>
         <label className="bk-field bk-field-inline">
@@ -144,7 +146,7 @@ export default function ReportsView({ reports, staff, isAdmin, search, expiredCo
               <li key={r.id} className={'bk-card bk-card-' + r.status}>
                 <Link to={`/apiculteur/signalements/${r.id}`} className="bk-card-main">
                   <div className="bk-card-photo">
-                    {url ? <img src={url} alt="" loading="lazy" /> : <span>{r.anonymized_at ? 'Effacée' : r.photo_path ? '…' : 'Pas de photo'}</span>}
+                    {url ? <img src={url} alt="" loading="lazy" /> : r.photo_path && !r.anonymized_at ? <span className="bk-card-photo-wait" /> : <Icon name="noPhoto" size={22} title={r.anonymized_at ? 'Photo effacée' : 'Pas de photo'} />}
                   </div>
                   <div className="bk-card-body">
                     <div className="bk-card-top">
@@ -167,7 +169,7 @@ export default function ReportsView({ reports, staff, isAdmin, search, expiredCo
                 </Link>
                 {r.telephone && (r.status === 'nouveau' || r.status === 'planifie') && (
                   <a className="bk-card-call" href={telHref(r.telephone)} aria-label={`Appeler ${r.nom}`}>
-                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5.5 2.5l1.5 3-1.6 1.2a8 8 0 0 0 3.9 3.9L10.5 9l3 1.5-.6 2.4c-.2.7-.9 1.1-1.6 1C6.4 13.3 2.7 9.6 2.1 4.7c-.1-.7.3-1.4 1-1.6z"/></svg>
+                    <Icon name="phone" size={18} />
                     <span>Appeler</span>
                   </a>
                 )}

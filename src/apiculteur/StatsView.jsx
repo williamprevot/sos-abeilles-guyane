@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState } from 'react';
 import { COMMUNES } from '../lib/communes.js';
+import { Icon } from './icons.jsx';
 
 const SAVED = '#23945A';   // couleur du statut « récupéré »
 const nf = new Intl.NumberFormat('fr-FR');
@@ -218,7 +219,7 @@ export default function StatsView({ reports }){
       <section className="bk-panel">
         <div className="bk-panel-head">
           <h2>Détail par commune</h2>
-          <button type="button" className="bk-btn" onClick={exportCsv}>Exporter (CSV)</button>
+          <button type="button" className="bk-btn" onClick={exportCsv}><Icon name="download" size={16} /> Exporter (CSV)</button>
         </div>
         <div className="bk-table-wrap">
           <table className="bk-table">

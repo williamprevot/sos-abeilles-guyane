@@ -8,27 +8,30 @@ export const STATUSES = [
 ];
 export const STATUS = Object.fromEntries(STATUSES.map((s) => [s.id, s]));
 
-/* Pictogramme de chaque statut (tracés SVG 16×16), partagé par les badges et la carte. */
-export const STATUS_GLYPH = {
-  nouveau:  '<path d="M8 3v6"/><path d="M8 12.5v.01"/>',
-  planifie: '<circle cx="8" cy="8" r="5.5"/><path d="M8 5v3.2l2 1.3"/>',
-  recupere: '<path d="M3.5 8.5l3 3 6-7"/>',
-  annule:   '<path d="M4.5 4.5l7 7M11.5 4.5l-7 7"/>'
-};
-export function glyphSvg(status, size = 14, stroke = 'currentColor'){
-  return `<svg width="${size}" height="${size}" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="${stroke}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${STATUS_GLYPH[status] || STATUS_GLYPH.nouveau}</svg>`;
-}
-export function StatusIcon({ status, size = 14 }){
-  return <span className="bk-glyph" dangerouslySetInnerHTML={{ __html: glyphSvg(status, size) }} />;
+/* Un petit point de la couleur du statut, toujours suivi du libellé. */
+export function StatusDot({ status }){
+  const s = STATUS[status] || STATUS.nouveau;
+  return <span className={'bk-dot bk-dot-' + s.id} style={{ '--c': s.color }} aria-hidden="true" />;
 }
 
 export function StatusBadge({ status }){
   const s = STATUS[status] || STATUS.nouveau;
   return (
     <span className={'bk-status bk-status-' + s.id}>
-      <span className="bk-status-dot" style={{ background: s.color }}><StatusIcon status={s.id} size={11} /></span>
+      <StatusDot status={s.id} />
       {s.label}
     </span>
+  );
+}
+
+/* Logo du site (trois alvéoles dorées), repris de l'en-tête public. */
+export function BrandMark({ size = 30 }){
+  return (
+    <svg className="bk-mark" width={size} height={size} viewBox="0 0 40 40" fill="none" aria-hidden="true">
+      <path d="M20,2 L27.8,6.5 L27.8,15.5 L20,20 L12.2,15.5 L12.2,6.5 Z" stroke="#D9A02C" strokeWidth="1.8" />
+      <path d="M13,15 L20.8,19.5 L20.8,28.5 L13,33 L5.2,28.5 L5.2,19.5 Z" stroke="#D9A02C" strokeWidth="1.8" />
+      <path d="M27,15 L34.8,19.5 L34.8,28.5 L27,33 L19.2,28.5 L19.2,19.5 Z" stroke="#D9A02C" strokeWidth="1.8" />
+    </svg>
   );
 }
 

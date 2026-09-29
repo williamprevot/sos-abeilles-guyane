@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { supabase } from '../lib/supabase.js';
+import { BrandMark } from './constants.jsx';
+import { Icon } from './icons.jsx';
 
 /* Écrans de connexion de l'espace apiculteur. Pas d'inscription libre :
    les comptes sont créés par invitation (onglet « Équipe » ou tableau Supabase). */
@@ -7,12 +9,19 @@ import { supabase } from '../lib/supabase.js';
 function AuthCard({ title, children }){
   return (
     <div className="bk-auth">
-      <div className="bk-auth-card">
+      <div className="bk-auth-top">
         <a className="bk-auth-brand" href="/">
-          <span aria-hidden="true">🐝</span> S.O.S Abeilles Guyane
+          <BrandMark size={28} />
+          <span>S.O.S <em>Abeilles</em> Guyane</span>
         </a>
-        <h1>{title}</h1>
-        {children}
+        <a className="bk-auth-site" href="/"><Icon name="back" size={15} /> Retour au site</a>
+      </div>
+      <div className="bk-auth-body">
+        <div className="bk-auth-card">
+          <p className="bk-eyebrow">Espace apiculteur</p>
+          <h1>{title}</h1>
+          {children}
+        </div>
       </div>
     </div>
   );
@@ -77,7 +86,7 @@ export function LoginScreen({ linkError }){
   }
 
   return (
-    <AuthCard title="Espace apiculteur">
+    <AuthCard title="Connexion">
       <p className="bk-muted">Accès réservé à l'équipe. Les comptes sont créés sur invitation.</p>
       <form onSubmit={onLogin} className="bk-form">
         <label className="bk-field">

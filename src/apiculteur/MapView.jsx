@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { navigate } from './nav.jsx';
 import { photoUrls, geocodeAddress, updateReport } from './api.js';
-import { STATUSES, STATUS, glyphSvg, escapeHtml, timeAgo, urgencyLabel, urgencyLevel } from './constants.jsx';
+import { STATUSES, STATUS, StatusDot, escapeHtml, timeAgo, urgencyLabel, urgencyLevel } from './constants.jsx';
 import { communeCenter } from '../lib/communes.js';
+import { Icon, iconHtml } from './icons.jsx';
 
 const MAPTILER_KEY = import.meta.env.VITE_MAPTILER_KEY || 'BWLQgt3asW0Wt5A6AKvg';
 const PERIODS = [
@@ -35,7 +36,7 @@ function isFresh(r){
 function pinHtml(r, approx){
   const s = STATUS[r.status] || STATUS.nouveau;
   const cls = ['bk-pin', 'bk-pin-' + s.id, approx ? 'bk-pin-approx' : '', isFresh(r) ? 'bk-pin-fresh' : ''].join(' ');
-  return `<span class="${cls}" style="--pin:${s.color}">${glyphSvg(s.id, 14, s.id === 'annule' ? '#4F5752' : '#FFFFFF')}</span>`;
+  return `<span class="${cls}" style="--pin:${s.color}"></span>`;
 }
 
 function popupHtml(r, approx, photoUrl){
@@ -45,12 +46,12 @@ function popupHtml(r, approx, photoUrl){
     <div class="bk-popup">
       ${photoUrl ? `<img src="${escapeHtml(photoUrl)}" alt="" class="bk-popup-photo">` : r.photo_path ? '<div class="bk-popup-photo bk-popup-photo-empty">Photo…</div>' : ''}
       <div class="bk-popup-body">
-        <span class="bk-status bk-status-${s.id}"><span class="bk-status-dot" style="background:${s.color}">${glyphSvg(s.id, 11)}</span>${escapeHtml(s.label)}</span>
+        <span class="bk-status bk-status-${s.id}"><span class="bk-dot bk-dot-${s.id}" style="--c:${s.color}"></span>${escapeHtml(s.label)}</span>
         <strong>${escapeHtml(r.commune)}${r.adresse ? ' · ' + escapeHtml(r.adresse) : ''}</strong>
         ${r.emplacement ? `<span>${escapeHtml(r.emplacement)}</span>` : ''}
         <span class="bk-muted">${escapeHtml(timeAgo(r.created_at))}${urg >= 2 && (r.status === 'nouveau' || r.status === 'planifie') ? ' · urgence ' + escapeHtml(urgencyLabel(r.urgence).toLowerCase()) : ''}</span>
         ${approx ? '<span class="bk-muted bk-small">Position approximative (centre de la commune)</span>' : ''}
-        <a href="/apiculteur/signalements/${r.id}" data-bk-link class="bk-popup-link">Ouvrir la fiche →</a>
+        <a href="/apiculteur/signalements/${r.id}" data-bk-link class="bk-popup-link">Ouvrir la fiche ${iconHtml('forward', 14)}</a>
       </div>
     </div>`;
 }
@@ -198,8 +199,7 @@ export default function MapView({ reports, focusId, pushToast, replaceReport }){
           {STATUSES.map((s) => (
             <button key={s.id} type="button" className={'bk-legend-item' + (visible[s.id] ? ' is-on' : '')} aria-pressed={visible[s.id]}
                     onClick={() => setVisible((v) => ({ ...v, [s.id]: !v[s.id] }))}>
-              <span className={'bk-pin bk-pin-mini bk-pin-' + s.id} style={{ '--pin': s.color }}
-                    dangerouslySetInnerHTML={{ __html: glyphSvg(s.id, 10, s.id === 'annule' ? '#4F5752' : '#FFFFFF') }} />
+              <StatusDot status={s.id} />
               {s.short} <span className="bk-chip-count">{counts[s.id]}</span>
             </button>
           ))}
@@ -222,13 +222,14 @@ export default function MapView({ reports, focusId, pushToast, replaceReport }){
 
       <div className="bk-map-foot">
         <p className="bk-muted bk-small">
-          <span className="bk-pin bk-pin-mini bk-pin-approx bk-pin-legend" aria-hidden="true" /> Contour en pointillés : position approximative (ni GPS ni adresse localisée).
+          <span className="bk-pin-legend" aria-hidden="true" /> Rond vide : position approximative (ni GPS ni adresse localisée).
           {' '}Un halo signale les nouveaux signalements des dernières 24 h.
         </p>
         {approxList.length > 0 && (
           geoBusy
             ? <p className="bk-info" role="status">Localisation des adresses… {geoBusy.done}/{geoBusy.total}</p>
             : <button type="button" className="bk-btn" onClick={locateAll}>
+                <Icon name="locate" size={16} />
                 Situer {approxList.length} adresse{approxList.length > 1 ? 's' : ''} approximative{approxList.length > 1 ? 's' : ''}
               </button>
         )}

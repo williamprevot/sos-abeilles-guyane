@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase.js';
 import { fetchProfiles, updateProfile, teamAction, isExpired, anonymizeReports, RETENTION_MONTHS } from './api.js';
 import { displayName, formatDate } from './constants.jsx';
 import { frenchAuthError } from './AuthScreens.jsx';
+import { Icon } from './icons.jsx';
 
 const ROLES = [
   { id: 'apiculteur', label: 'Apiculteur' },
@@ -79,7 +80,7 @@ function MyAccount({ profile, pushToast, onProfileChange, onSignOut }){
         <button className="bk-btn" disabled={busy === 'pw' || !password}>Changer le mot de passe</button>
       </form>
       {error && <p className="bk-error" role="alert">{error}</p>}
-      <button className="bk-linkbtn" onClick={onSignOut}>Se déconnecter</button>
+      <button className="bk-linkbtn" onClick={onSignOut}><Icon name="logout" size={15} /> Se déconnecter</button>
     </section>
   );
 }
@@ -157,7 +158,7 @@ function Members({ profile, pushToast, staffReload }){
                       <button className="bk-btn" onClick={() => setConfirmRemove(null)}>Annuler</button>
                     </>
                   ) : (
-                    <button className="bk-linkbtn bk-danger-text" onClick={() => setConfirmRemove(m.id)}>Retirer l'accès</button>
+                    <button className="bk-linkbtn bk-danger-text" onClick={() => setConfirmRemove(m.id)}><Icon name="userMinus" size={15} /> Retirer l'accès</button>
                   ))}
                 </div>
               </li>
@@ -184,7 +185,7 @@ function Members({ profile, pushToast, staffReload }){
             <option value="admin">Administrateur : gère aussi l'équipe</option>
           </select>
         </label>
-        <button className="bk-btn bk-btn-primary" disabled={busy === 'invite'}>{busy === 'invite' ? 'Envoi…' : 'Envoyer l\'invitation'}</button>
+        <button className="bk-btn bk-btn-primary" disabled={busy === 'invite'}><Icon name="userPlus" size={17} /> {busy === 'invite' ? 'Envoi…' : 'Envoyer l\'invitation'}</button>
       </form>
     </section>
   );

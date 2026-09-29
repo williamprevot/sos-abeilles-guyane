@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link, navigate, canGoBack } from './nav.jsx';
 import { fetchEvents, updateReport, deleteReport, photoUrls, geocodeAddress } from './api.js';
+import { Icon } from './icons.jsx';
 import {
-  STATUSES, STATUS, StatusBadge, StatusIcon, urgencyLevel, urgencyLabel,
+  STATUSES, STATUS, StatusBadge, StatusDot, urgencyLevel, urgencyLabel,
   formatDateTime, timeAgo, telHref, directionsLinks, displayName
 } from './constants.jsx';
 
@@ -105,7 +106,7 @@ export default function ReportDetail({ id, reports, staff, profile, isAdmin, rep
 
   return (
     <article className="bk-view bk-detail">
-      <Link to="/apiculteur" className="bk-back" onClick={(e) => { if(canGoBack()){ e.preventDefault(); window.history.back(); } }}>← Retour</Link>
+      <Link to="/apiculteur" className="bk-back" onClick={(e) => { if(canGoBack()){ e.preventDefault(); window.history.back(); } }}><Icon name="back" size={16} /> Retour</Link>
 
       <div className="bk-detail-head">
         <div>
@@ -127,9 +128,9 @@ export default function ReportDetail({ id, reports, staff, profile, isAdmin, rep
               <>
                 <p className="bk-contact-name">{r.nom}</p>
                 <div className="bk-actions">
-                  <a className="bk-btn bk-btn-primary" href={telHref(r.telephone)}>Appeler {r.telephone}</a>
-                  <a className="bk-btn" href={`sms:${String(r.telephone).replace(/[^\d+]/g, '')}?&body=${encodeURIComponent(smsBody)}`}>SMS</a>
-                  <a className="bk-btn" href={`mailto:${r.email}?subject=${encodeURIComponent(mailSubject)}`}>Email</a>
+                  <a className="bk-btn bk-btn-primary" href={telHref(r.telephone)}><Icon name="phone" size={17} /> Appeler {r.telephone}</a>
+                  <a className="bk-btn" href={`sms:${String(r.telephone).replace(/[^\d+]/g, '')}?&body=${encodeURIComponent(smsBody)}`}><Icon name="sms" size={17} /> SMS</a>
+                  <a className="bk-btn" href={`mailto:${r.email}?subject=${encodeURIComponent(mailSubject)}`}><Icon name="mail" size={17} /> Email</a>
                 </div>
                 <p className="bk-muted bk-small">{r.email}{r.lang && r.lang !== 'fr' ? ` · a écrit en ${LANG_NAMES[r.lang] || r.lang}` : ''}</p>
               </>
@@ -143,7 +144,7 @@ export default function ReportDetail({ id, reports, staff, profile, isAdmin, rep
                 <button key={s.id} type="button" role="radio" aria-checked={r.status === s.id}
                         className={'bk-status-opt bk-status-opt-' + s.id + (r.status === s.id ? ' is-on' : '')}
                         disabled={busy === 'status'} onClick={() => changeStatus(s.id)}>
-                  <span className="bk-status-dot" style={{ background: s.color }}><StatusIcon status={s.id} size={11} /></span>
+                  <StatusDot status={s.id} />
                   {s.label}
                 </button>
               ))}
@@ -182,7 +183,7 @@ export default function ReportDetail({ id, reports, staff, profile, isAdmin, rep
             {photo ? (
               <a href={photo} target="_blank" rel="noopener noreferrer" className="bk-photo-link">
                 <img src={photo} alt={`Essaim signalé à ${r.commune}`} />
-                <span>Agrandir</span>
+                <span><Icon name="expand" size={14} /> Agrandir</span>
               </a>
             ) : (
               <p className="bk-muted">{r.photo_path ? 'Chargement de la photo…' : anonymized ? 'Photo effacée.' : 'Aucune photo envoyée.'}</p>
@@ -210,11 +211,11 @@ export default function ReportDetail({ id, reports, staff, profile, isAdmin, rep
                   : 'Pas encore de position précise sur la carte.'}
               </p>
               <div className="bk-actions">
-                <a className="bk-btn" href={links.google} target="_blank" rel="noopener noreferrer">Itinéraire Google Maps</a>
-                <a className="bk-btn" href={links.waze} target="_blank" rel="noopener noreferrer">Waze</a>
+                <a className="bk-btn" href={links.google} target="_blank" rel="noopener noreferrer"><Icon name="navigation" size={16} /> Google Maps</a>
+                <a className="bk-btn" href={links.waze} target="_blank" rel="noopener noreferrer"><Icon name="route" size={16} /> Waze</a>
                 {hasPos
-                  ? <Link className="bk-btn" to={`/apiculteur/carte?focus=${r.id}`}>Voir sur la carte</Link>
-                  : <button type="button" className="bk-btn" disabled={busy === 'geo'} onClick={locate}>{busy === 'geo' ? 'Recherche…' : 'Situer l\'adresse sur la carte'}</button>}
+                  ? <Link className="bk-btn" to={`/apiculteur/carte?focus=${r.id}`}><Icon name="mapPin" size={16} /> Voir sur la carte</Link>
+                  : <button type="button" className="bk-btn" disabled={busy === 'geo'} onClick={locate}><Icon name="locate" size={16} /> {busy === 'geo' ? 'Recherche…' : 'Situer l\'adresse sur la carte'}</button>}
               </div>
             </section>
           )}
@@ -225,7 +226,7 @@ export default function ReportDetail({ id, reports, staff, profile, isAdmin, rep
               <ol className="bk-timeline">
                 {events.map((ev) => (
                   <li key={ev.id}>
-                    <span className="bk-status-dot" style={{ background: (STATUS[ev.status] || STATUS.nouveau).color }}><StatusIcon status={ev.status} size={10} /></span>
+                    <StatusDot status={ev.status} />
                     <span>
                       <strong>{(STATUS[ev.status] || { label: ev.status }).label}</strong>
                       {' · '}{ev.changed_by_name || (ev.status === 'nouveau' ? 'formulaire du site' : 'équipe')}
@@ -242,7 +243,7 @@ export default function ReportDetail({ id, reports, staff, profile, isAdmin, rep
               <h2>Supprimer</h2>
               <p className="bk-muted bk-small">Pour les doublons, tests ou messages indésirables. La photo est effacée aussi. Un signalement supprimé ne compte plus dans les statistiques.</p>
               {!confirmDelete
-                ? <button type="button" className="bk-btn bk-btn-danger-outline" onClick={() => setConfirmDelete(true)}>Supprimer ce signalement…</button>
+                ? <button type="button" className="bk-btn bk-btn-danger-outline" onClick={() => setConfirmDelete(true)}><Icon name="trash" size={16} /> Supprimer ce signalement…</button>
                 : (
                   <div className="bk-actions">
                     <button type="button" className="bk-btn bk-btn-danger" disabled={busy === 'delete'} onClick={onDelete}>{busy === 'delete' ? 'Suppression…' : 'Oui, supprimer définitivement'}</button>

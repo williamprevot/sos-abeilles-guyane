@@ -3,7 +3,8 @@ import { supabase, supabaseConfigured, INITIAL_HASH } from '../lib/supabase.js';
 import { Link, navigate, useLocation } from './nav.jsx';
 import { useReports } from './useReports.js';
 import { fetchProfiles, isExpired } from './api.js';
-import { displayName, urgencyLabel } from './constants.jsx';
+import { displayName, urgencyLabel, BrandMark } from './constants.jsx';
+import { Icon } from './icons.jsx';
 import { LoginScreen, SetPasswordScreen, PendingScreen, SetupNeededScreen, ErrorScreen, frenchAuthError } from './AuthScreens.jsx';
 import ReportsView from './ReportsView.jsx';
 import ReportDetail from './ReportDetail.jsx';
@@ -82,13 +83,13 @@ function AuthGate(){
 
 const TABS = [
   { to: '/apiculteur', label: 'Signalements', match: (p) => p === '/apiculteur' || p.startsWith('/apiculteur/signalements'),
-    icon: '<path d="M3 4h10M3 8h10M3 12h6"/>' },
+    icon: 'inbox' },
   { to: '/apiculteur/carte', label: 'Carte', match: (p) => p.startsWith('/apiculteur/carte'),
-    icon: '<path d="M8 14s4.5-4.2 4.5-7.5a4.5 4.5 0 0 0-9 0C3.5 9.8 8 14 8 14z"/><circle cx="8" cy="6.5" r="1.6"/>' },
+    icon: 'map' },
   { to: '/apiculteur/statistiques', label: 'Statistiques', match: (p) => p.startsWith('/apiculteur/statistiques'),
-    icon: '<path d="M3 13V8M8 13V3M13 13V6"/>' },
+    icon: 'chart' },
   { to: '/apiculteur/equipe', label: 'Équipe', match: (p) => p.startsWith('/apiculteur/equipe'),
-    icon: '<circle cx="6" cy="5.5" r="2.2"/><path d="M2 13c0-2.2 1.8-3.8 4-3.8s4 1.6 4 3.8"/><path d="M10.5 3.6a2.2 2.2 0 0 1 0 4M12 9.6c1.2.5 2 1.8 2 3.4"/>' }
+    icon: 'users' }
 ];
 
 function Dashboard({ profile, onProfileChange, onSignOut }){
@@ -144,7 +145,7 @@ function Dashboard({ profile, onProfileChange, onSignOut }){
       <header className="bk-top">
         <div className="bk-top-inner">
           <Link to="/apiculteur" className="bk-brand">
-            <span aria-hidden="true">🐝</span>
+            <BrandMark size={30} />
             <span className="bk-brand-text">S.O.S Abeilles <em>Espace apiculteur</em></span>
           </Link>
           <nav className="bk-tabs" aria-label="Sections">
@@ -153,7 +154,7 @@ function Dashboard({ profile, onProfileChange, onSignOut }){
               const label = tab.to === '/apiculteur/equipe' && !isAdmin ? 'Mon compte' : tab.label;
               return (
                 <Link key={tab.to} to={tab.to} className={'bk-tab' + (active ? ' is-active' : '')} aria-current={active ? 'page' : undefined}>
-                  <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" dangerouslySetInnerHTML={{ __html: tab.icon }} />
+                  <Icon name={tab.to === '/apiculteur/equipe' && !isAdmin ? 'user' : tab.icon} size={19} />
                   <span>{label}</span>
                   {tab.to === '/apiculteur' && newCount > 0 && <span className="bk-count" aria-label={`${newCount} nouveaux`}>{newCount}</span>}
                 </Link>
@@ -165,7 +166,7 @@ function Dashboard({ profile, onProfileChange, onSignOut }){
               <span className="bk-live-dot" aria-hidden="true" />{data.live ? 'En direct' : 'Hors ligne'}
             </span>
             <span className="bk-user-name">{displayName(profile)}</span>
-            <button className="bk-linkbtn bk-signout" onClick={onSignOut}>Déconnexion</button>
+            <button className="bk-linkbtn bk-signout" onClick={onSignOut}><Icon name="logout" size={16} /><span>Déconnexion</span></button>
           </div>
         </div>
       </header>
@@ -188,7 +189,7 @@ function Dashboard({ profile, onProfileChange, onSignOut }){
               {t.text && <span>{t.text}</span>}
             </div>
             {t.to && <Link to={t.to} className="bk-toast-link" onClick={() => setToasts((list) => list.filter((x) => x.id !== t.id))}>Ouvrir</Link>}
-            <button className="bk-toast-close" aria-label="Fermer" onClick={() => setToasts((list) => list.filter((x) => x.id !== t.id))}>×</button>
+            <button className="bk-toast-close" aria-label="Fermer" onClick={() => setToasts((list) => list.filter((x) => x.id !== t.id))}><Icon name="close" size={16} /></button>
           </div>
         ))}
       </div>
