@@ -18,9 +18,13 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export default async (req) => {
   if(req.method !== 'POST') return json(405, { error: 'Méthode non autorisée' });
 
-  const url = (process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || '').replace(/\/+$/, '');
-  const anonKey = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  // Seule l'origine compte (https://xxxx.supabase.co), même si l'adresse a été copiée avec un chemin.
+  let url = '';
+  let rawUrl = (process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || '').trim();
+  if(rawUrl && !/^https?:\/\//i.test(rawUrl)) rawUrl = 'https://' + rawUrl;
+  try{ url = new URL(rawUrl).origin; }catch(e){ url = ''; }
+  const anonKey = (process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY || '').trim();
+  const serviceKey = (process.env.SUPABASE_SERVICE_ROLE_KEY || '').trim();
   if(!url || !anonKey || !serviceKey){
     return json(500, { error: 'Fonction non configurée : ajoutez SUPABASE_SERVICE_ROLE_KEY dans Netlify (voir SETUP.md).' });
   }

@@ -4,8 +4,15 @@ import { createClient } from '@supabase/supabase-js';
    d'environnement Netlify (VITE_SUPABASE_URL et VITE_SUPABASE_ANON_KEY).
    La clé « anon » est publique : ce sont les règles de sécurité de la base
    (Row Level Security, voir supabase/migrations) qui protègent les données. */
-const url = import.meta.env.VITE_SUPABASE_URL;
-const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+/* Seule l'origine compte (https://xxxx.supabase.co) : on tolère une adresse
+   copiée avec un chemin (…/rest/v1/), une barre finale ou des espaces. */
+function supabaseOrigin(value){
+  let v = String(value || '').trim();
+  if(v && !/^https?:\/\//i.test(v)) v = 'https://' + v;
+  try{ return new URL(v).origin; }catch(e){ return ''; }
+}
+const url = supabaseOrigin(import.meta.env.VITE_SUPABASE_URL);
+const anonKey = String(import.meta.env.VITE_SUPABASE_ANON_KEY || '').trim();
 
 export const supabaseConfigured = Boolean(url && anonKey);
 
