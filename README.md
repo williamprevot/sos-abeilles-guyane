@@ -4,69 +4,74 @@ Site vitrine + formulaire de signalement pour un service gratuit de collecte et
 relocalisation d'essaims d'abeilles en Guyane française (zone CACL : Cayenne,
 Rémire-Montjoly, Matoury, Macouria, Montsinéry-Tonnegrande, Roura).
 
-Site statique (aucun framework, aucun build) : chatbot de signalement, carte
-interactive, FAQ, animation d'essaim en canvas.
+Version 2 : le site garde exactement son design, mais il est devenu **dynamique**.
+
+- Les signalements sont **enregistrés dans une base de données** (Supabase, serveurs
+  dans l'Union européenne), en plus des emails de notification et de confirmation.
+- Un **espace apiculteur** (`/apiculteur`, connexion obligatoire) liste les
+  signalements et leur statut (nouveau → planifié → **essaim récupéré** / annulé),
+  avec photo, appel/SMS en un geste, itinéraire, notes internes et historique.
+- Une **carte réservée à l'équipe** montre les signalements **en direct**, avec les
+  photos envoyées par les habitants (position GPS si l'habitant l'a partagée).
+- Des **statistiques par commune** suivent le nombre d'essaims sauvés ; les totaux
+  (sans aucune donnée personnelle) s'affichent aussi sur le site public.
+- Comptes **apiculteur(s) + administrateur**, sur invitation uniquement.
+
+**Mise en route : voir [SETUP.md](SETUP.md)** (base Supabase, variables Netlify, premier compte).
 
 ## Structure du projet
 
 ```
-index.html        — structure de la page uniquement
-css/styles.css     — tous les styles
-js/script.js       — toute la logique (chatbot, carte, animation, formulaire)
-js/consent.js      — bandeau cookies (RGPD) + mesure d'audience Clarity
-confidentialite.html — politique de confidentialité (page autonome)
-robots.txt         — autorise l'indexation par les moteurs de recherche
-sitemap.xml        — plan du site pour le référencement
+index.html                  — point d'entrée (balises SEO inchangées)
+public/css/styles.css       — le CSS historique du site, réutilisé tel quel
+public/js/consent.js        — bandeau cookies (RGPD) + mesure d'audience Clarity
+public/confidentialite.html — politique de confidentialité (page autonome)
+public/img, robots.txt, sitemap.xml
+
+src/main.jsx, src/App.jsx   — démarrage React + aiguillage site / espace apiculteur
+src/pages/Home.jsx          — la page d'accueil, assemblée à partir des composants
+src/components/site/        — les sections du site (en-tête, héros, carte, chatbot…)
+src/legacy/home.js          — le comportement historique (chatbot, carte, animation)
+src/i18n/                   — les 5 langues (FR / EN / ES / PT / ZH)
+src/lib/                    — connexion Supabase, envoi d'un signalement, communes
+src/apiculteur/             — l'espace apiculteur (liste, fiche, carte, stats, équipe)
+src/styles/site-v2.css      — les quelques styles ajoutés au site public
+
+supabase/migrations/        — tables, règles de sécurité, photos, statistiques (SQL)
+netlify/functions/team.mjs  — inviter / retirer un membre (clé secrète côté serveur)
+netlify.toml                — construction (npm run build) et adresses /apiculteur
 ```
 
-Le HTML, le CSS et le JavaScript sont séparés en fichiers distincts pour
-faciliter la maintenance : on modifie l'apparence dans `css/styles.css` sans
-toucher au comportement, et le comportement dans `js/script.js` sans toucher
-à la structure. Aucune étape de compilation n'est nécessaire — ces fichiers
-sont chargés tels quels par le navigateur.
+Netlify construit le site à chaque push (`npm run build` → dossier `dist/`).
 
-## Configuration nécessaire avant mise en ligne
+## Sécurité et données personnelles
 
-Trois clés gratuites doivent être renseignées dans `js/script.js` pour que le
-formulaire et la carte fonctionnent réellement (repérables par leur nom en
-majuscules) :
+- La clé Supabase présente dans le site est **publique par conception** : ce sont les
+  règles de la base (Row Level Security) qui protègent les données. Le public peut
+  **déposer** un signalement, jamais en **lire** un.
+- Les photos sont dans un espace **privé**, affichées à l'équipe par des liens valables 1 h.
+- La clé **secrète** Supabase n'existe que dans Netlify (fonction `team`), jamais dans le code.
+- Un compte nouvellement créé est « en attente » tant qu'un admin ne l'a pas activé ;
+  un apiculteur ne peut pas changer son propre rôle.
+- Conservation : 12 mois après la clôture, les données personnelles sont anonymisées
+  (Équipe → Conservation des données).
+- L'espace apiculteur n'est ni indexé (noindex, robots.txt) ni mesuré (pas de Clarity).
 
-### 1. EmailJS (envoi des emails) — gratuit, 200 emails/mois
+### Emails EmailJS
 
-1. Créer un compte sur [emailjs.com](https://emailjs.com)
-2. Ajouter un service email relié à une boîte mail (voir le guide de configuration pour l'adresse exacte)
-3. Créer 2 templates :
-   - notification à l'apiculteur (+ copie dev)
-   - confirmation immédiate au client
-4. Dans `js/script.js`, remplacer :
-   - `VOTRE_PUBLIC_KEY` → votre Public Key EmailJS
-   - les identifiants de service/templates (déjà renseignés) si vous recréez vos propres templates
-
-L'apiculteur reçoit dans cet unique email toutes les informations nécessaires
-(dont le téléphone du client) et le contacte directement par téléphone pour
-convenir d'un horaire — aucune étape de confirmation automatique par email
-n'est nécessaire.
+Les deux emails (alerte à l'apiculteur, confirmation à l'habitant) partent toujours
+via EmailJS (200 emails/mois gratuits). Le modèle de l'apiculteur peut afficher
+`{{lien_espace}}`, le lien direct vers la fiche du signalement.
 
 **Confidentialité :** ne jamais saisir d'adresse email réelle (apiculteur ou
-développeur) dans `js/script.js`, ni dans ce README, ni dans aucun fichier du
-dépôt — ce sont des fichiers publics, lisibles par n'importe qui via "Afficher
-le code source" ou en parcourant le dépôt. Les destinataires se configurent
-uniquement dans le champ **To Email** du modèle EmailJS `template_notification`
-(tableau de bord EmailJS) et dans les notifications Netlify Forms ci-dessous —
-deux réglages privés, jamais exposés au navigateur.
+développeur) dans le code, ni dans ce README, ni dans aucun fichier du dépôt — ce
+sont des fichiers publics. Les destinataires se règlent uniquement dans le champ
+**To Email** du modèle EmailJS (tableau de bord EmailJS), jamais exposé au navigateur.
 
-### 2. MapTiler (fond de carte) — gratuit, sans carte bancaire
+### MapTiler (fonds de carte)
 
-1. Créer un compte sur [maptiler.com](https://maptiler.com)
-2. Récupérer la clé API (déjà fait : `BWLQgt3asW0Wt5A6AKvg`)
-3. Une fois le nom de domaine définitif connu, la restreindre dans
-   MapTiler → API Keys → Allowed HTTP Origins, pour la sécurité.
-
-### 3. Netlify Forms (notification photo) — après déploiement
-
-Project configuration → Forms → Form notifications → Add notification →
-Email notification, une fois par destinataire (apiculteur, puis dev) — voir
-le guide de configuration pour les adresses exactes.
+Clé gratuite `BWLQgt3asW0Wt5A6AKvg` (variable `VITE_MAPTILER_KEY`). Une fois le nom de
+domaine définitif connu, la restreindre dans MapTiler → API Keys → Allowed HTTP Origins.
 
 ## Statistiques de visite (Microsoft Clarity) et RGPD
 
@@ -78,15 +83,15 @@ propose « Refuser » et « Accepter » avec le même poids visuel, plus « Pers
 Le choix est gardé 6 mois (recommandation CNIL), puis redemandé. « Gérer mes cookies »
 dans le pied de page permet de changer d'avis à tout moment.
 
-Fichiers : `js/consent.js` (bandeau + chargement de Clarity), fin de `css/styles.css`,
-politique mise à jour dans `index.html` (boîte de dialogue) et `confidentialite.html`,
+Fichiers : `public/js/consent.js` (bandeau + chargement de Clarity), fin de `public/css/styles.css`,
+politique dans `src/components/site/PrivacyModal.jsx` (boîte de dialogue) et `public/confidentialite.html`,
 formulaire de signalement masqué (`data-clarity-mask="True"`).
 
 ### Activer Clarity
 1. clarity.microsoft.com → menu des projets → **Nouveau projet** : `S.O.S Abeilles Guyane`,
    URL `https://sosabeillesguyane.netlify.app`. Ne PAS coller le code proposé.
 2. Paramètres → Vue d'ensemble → copier l'**ID de projet**.
-3. Dans `js/consent.js`, remplacer `COLLEZ_VOTRE_ID_CLARITY` par cet ID, puis publier.
+3. Dans `public/js/consent.js`, remplacer `COLLEZ_VOTRE_ID_CLARITY` par cet ID, puis publier.
 4. Paramètres → Configuration → **Cookies : désactivé** ; Masque en cours → **Équilibré**.
 
 ### Événements envoyés (Clarity → Filtres → Événements personnalisés)
@@ -94,17 +99,17 @@ formulaire de signalement masqué (`data-clarity-mask="True"`).
 `clic_telephone`, `clic_email`. Seuls les visiteurs qui acceptent sont comptés.
 
 Si vous ajoutez un autre outil de suivi : l'ajouter au bandeau et à la politique, et
-augmenter `CONSENT_VERSION` dans `js/consent.js` pour redemander l'accord.
+augmenter `CONSENT_VERSION` dans `public/js/consent.js` pour redemander l'accord.
 
 ## Déploiement
 
-Le dépôt est relié à Netlify : chaque `git push` sur la branche `main`
-redéploie automatiquement le site (aucune action manuelle nécessaire).
+Le dépôt est relié à Netlify : chaque `git push` sur `main` reconstruit et redéploie le
+site. Chaque Pull Request produit un aperçu (deploy preview) pour tester avant.
 
-## Sécurité
+## Sécurité du formulaire
 
 - HTTPS automatique via Netlify.
-- Un champ anti-robot (honeypot) protège le formulaire des soumissions
-  automatisées.
-- Activer la limite de taux et la liste blanche de domaines dans les
-  tableaux de bord EmailJS et MapTiler une fois le domaine final connu.
+- Un champ anti-robot (honeypot) et un frein côté base (20 dépôts / 10 min) protègent
+  des soumissions automatisées.
+- Activer la limite de taux et la liste blanche de domaines dans les tableaux de bord
+  EmailJS et MapTiler une fois le domaine final connu.

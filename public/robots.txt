@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
+# Espace réservé à l'équipe (connexion obligatoire)
+Disallow: /apiculteur
 
 Sitemap: https://sosabeillesguyane.netlify.app/sitemap.xml
