@@ -31,12 +31,14 @@ function frenchAuthError(error){
   const msg = (error && (error.message || error.error_description)) || String(error || '');
   if(/invalid login credentials/i.test(msg)) return 'Email ou mot de passe incorrect.';
   if(/email not confirmed/i.test(msg)) return 'Ce compte n\'est pas encore activé : ouvrez le lien reçu par email.';
+  if(/secret api key/i.test(msg)) return 'Mauvaise clé dans Netlify : VITE_SUPABASE_ANON_KEY doit contenir la clé « Publishable » (sb_publishable_…), pas la clé secrète. Corrigez-la puis relancez le déploiement.';
+  if(/invalid api key|no api key|apikey/i.test(msg)) return 'Clé Supabase refusée : vérifiez VITE_SUPABASE_ANON_KEY dans Netlify (clé « Publishable », sb_publishable_…, copiée en entier), puis relancez le déploiement.';
   if(/rate limit|too many/i.test(msg)) return 'Trop de tentatives. Patientez quelques minutes puis réessayez.';
-  if(/expired|invalid/i.test(msg)) return 'Ce lien a expiré ou a déjà servi. Demandez un nouveau lien avec « Mot de passe oublié ».';
+  if(/otp_expired|link is invalid|has expired|token has expired/i.test(msg)) return 'Ce lien a expiré ou a déjà servi. Demandez un nouveau lien avec « Mot de passe oublié ».';
   if(/should be at least|password.*characters/i.test(msg)) return 'Le mot de passe doit contenir au moins 8 caractères.';
   if(/same.*password|different from the old/i.test(msg)) return 'Choisissez un mot de passe différent de l\'ancien.';
-  if(/failed to fetch|network/i.test(msg)) return 'Pas de connexion internet. Réessayez dans un instant.';
-  return msg || 'Une erreur est survenue.';
+  if(/failed to fetch|networkerror|load failed/i.test(msg)) return 'Impossible de joindre la base. Vérifiez la connexion internet, et l\'adresse VITE_SUPABASE_URL dans Netlify (https://xxxx.supabase.co).';
+  return 'Erreur : ' + (msg || 'inconnue');
 }
 export { frenchAuthError };
 
@@ -53,7 +55,7 @@ export function LoginScreen({ linkError }){
     setBusy(true); setError(''); setInfo('');
     const { error: err } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
     setBusy(false);
-    if(err) setError(frenchAuthError(err));
+    if(err){ console.error('[Connexion]', err); setError(frenchAuthError(err)); }
   }
 
   async function onForgot(e){
